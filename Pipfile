@@ -1,0 +1,19 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+requests = "*"
+dotenv = "*"
+python-dotenv = "*"
+termcolor = "*"
+marshmallow = "*"
+
+[requires]
+python_version = "3.8"
+
+[scripts]
+dump = "python parlerctl.py"
