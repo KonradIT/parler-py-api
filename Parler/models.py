@@ -41,6 +41,8 @@ class PostItem(Schema):
 	Upvotes  = fields.String(data_key="upvotes")
 	Parent  = fields.String(data_key="parent")
 	Sponsored  = fields.String(data_key="sponsored")
+	Sensitive  = fields.Bool(data_key="sensitive")
+	Root = fields.String(data_key="root")
 
 class Feed():
 	def __init__(self, Badge, BadgeString, Last, Next, PendingFollowers, Prev, Items):
