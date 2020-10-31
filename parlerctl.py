@@ -13,7 +13,7 @@ if __name__ == '__main__':
 
 	parser = argparse.ArgumentParser()
 	parser.add_argument(
-		'--show', help="profile/hashtags", type=str)
+		'--show', help="profile/hashtags", type=str, required=True)
 	parser.add_argument('--summary', dest='summary', action='store_true')
 	parser.set_defaults(summary=False)
 

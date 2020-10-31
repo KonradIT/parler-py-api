@@ -57,3 +57,33 @@ class Parler:
 		if response.status_code != 200:
 			raise Exception({"status": response.status_code})
 		return response.json()
+		
+	"""
+	:param limit: limit
+	:param cursor: string to id the next items
+	"""
+	def notifications(self, limit=10, cursor="") -> dict:
+		params = (
+			("limit", limit),
+		)
+		if cursor != "":
+			params = params + (("startkey",cursor),)
+		response = self.session.get(self.base_url + "/notification",  params=params)
+		if response.status_code != 200:
+			raise Exception({"status": response.status_code})
+		return response.json()
+
+	"""
+	:param limit: limit
+	:param cursor: string to id the next items
+	"""
+	def discover_feed(self, limit=10, cursor="") -> dict:
+		params = (
+			("limit", limit),
+		)
+		if cursor != "":
+			params = params + (("startkey",cursor),)
+		response = self.session.get(self.base_url + "/discover/posts",  params=params)
+		if response.status_code != 200:
+			raise Exception({"status": response.status_code})
+		return response.json()
