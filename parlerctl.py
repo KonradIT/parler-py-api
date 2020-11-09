@@ -17,11 +17,19 @@ if __name__ == '__main__':
 	parser.add_argument('--summary', dest='summary', action='store_true')
 	parser.set_defaults(summary=False)
 
+	parser.add_argument("--term", type=str)
 	args = parser.parse_args()
 
 	if args.show == "profile":
 		print(json.dumps(parler.profile(), indent=4))
 	if args.show == "hashtags":
+		if args.term != "":
+			if args.summary:
+				for tag in parler.hashtags(args.term).get("tags"):
+					print(colored(f'- {tag.get("tag")}', "red"), colored(f'({tag.get("totalPosts")})', "cyan"))
+				exit()
+			print(json.dumps(parler.hashtags(args.term), indent=4))
+			exit()
 		if args.summary:
 			for tag in parler.hashtags().get("tags"):
 				print(colored(f'- {tag.get("tag")}', "red"), colored(f'({tag.get("totalPosts")})', "cyan"))

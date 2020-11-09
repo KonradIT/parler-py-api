@@ -87,3 +87,20 @@ class Parler:
 		if response.status_code != 200:
 			raise Exception({"status": response.status_code})
 		return response.json()
+
+	"""
+	:param tag: hashtag to get feed from
+	:param limit: limit
+	:param cursor: string to id the next items
+	"""
+	def hashtags_feed(self, tag, limit=10, cursor="") -> dict:
+		params = (
+			("tag", tag),
+			("limit", limit)
+		)
+		if cursor != "":
+			params = params + (("startkey",cursor),)
+		response = self.session.get(self.base_url + "/post/hashtag",  params=params)
+		if response.status_code != 200:
+			raise Exception({"status": response.status_code})
+		return response.json()
