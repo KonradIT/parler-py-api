@@ -1,7 +1,40 @@
 import requests
 from typing import List
+import random
+import string
+import json
 
 class Parler:
+
+
+	@staticmethod
+	def get_login_key(email, password):
+		data = {
+			"identifier": email,
+			"password": password,
+			"deviceId": "".join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(16))
+		}
+		response = requests.post('https://api.parler.com/v2/login/new', data=json.dumps(data))
+		return response.json()
+	
+	@staticmethod
+	def get_chapta_image(key):
+		data = {
+			"identifier": key
+		}
+
+		response = requests.post('https://api.parler.com/v2/login/captcha/new', data=json.dumps(data))
+		return response.json()
+
+	@staticmethod
+	def submit_chapta(key, solution):
+		data ={
+			"identifier": key,
+			"solution":solution
+		}
+
+		response = requests.post('https://api.parler.com/v2/login/captcha/submit',data=json.dumps(data))
+		return response.json()
 	"""
 	:param jst: short-term token
 	:param mst: master token
