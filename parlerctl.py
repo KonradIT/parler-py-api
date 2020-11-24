@@ -20,8 +20,13 @@ if __name__ == '__main__':
 	parser.add_argument("--term", type=str)
 	args = parser.parse_args()
 
+	# DLK hacking
 	if args.show == "profile":
-		print(json.dumps(parler.profile(), indent=4))
+		if args.term:
+			print(json.dumps(parler.profile(username=args.term), indent=4))
+		else:
+			print(json.dumps(parler.profile(), indent=4))
+	# /DLK hacking
 	if args.show == "hashtags":
 		if args.term != "":
 			if args.summary:
