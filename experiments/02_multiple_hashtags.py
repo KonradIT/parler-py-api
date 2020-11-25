@@ -62,11 +62,11 @@ def get_posts(hashtag):
             time.sleep(20)
     while feed.last == False:
         time.sleep(random.randint(1, 20))
-        with open(filename % (hashtag, str(datetime.date.today()), "posts"), mode="a") as posts:
+        with open(filename % (hashtag, str(datetime.date.today()), "posts"), mode="w") as posts:
             json.dump(feed.items, posts)
-        with open(filename % (hashtag, str(datetime.date.today()), "users"), mode="a") as users:
+        with open(filename % (hashtag, str(datetime.date.today()), "users"), mode="w") as users:
             json.dump(feed.users, users)
-        with open(filename % (hashtag, str(datetime.date.today()), "links"), mode="a") as links:
+        with open(filename % (hashtag, str(datetime.date.today()), "links"), mode="w") as links:
             json.dump(feed.links, links)
 
         while True:
