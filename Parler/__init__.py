@@ -137,3 +137,29 @@ class Parler:
 		if response.status_code != 200:
 			raise Exception({"status": response.status_code})
 		return response.json()
+
+	"""
+	:param search: search term
+	"""
+	def users(self, searchtag="") -> dict:
+		params = (
+			("search", searchtag),
+		)
+		response = self.session.get(self.base_url + "/users", params=params)
+		if response.status_code != 200:
+			raise Exception({"status": response.status_code})
+		return response.json()
+
+	def follow_user(self, username) -> dict:
+		params = (
+			("username", username),
+		)
+		data = json.dumps({"username": username})
+		headers = {
+			'Accept': 'application/json, text/plain, */*',
+			'Content-Type': 'application/json',
+		}
+		response = self.session.post(self.base_url + "/follow", params=params, data=data, headers=headers)
+		if response.status_code != 200:
+			raise Exception({"status": response.status_code})
+		return response.json()

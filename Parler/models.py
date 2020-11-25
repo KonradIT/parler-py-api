@@ -91,3 +91,20 @@ class FeedSchema(Schema):
     @post_load
     def make_feed(self, data, **kwargs):
         return Feed(**data)
+
+class UserList():
+    def __init__(self,Users, Last, Next, Prev):
+        self.users = Users
+        self.last = Last
+        self.next = Next
+        self.prev = Prev
+
+class UserListSchema(Schema):
+    Users = fields.List(fields.Nested(UserItem), data_key="users")
+    Last = fields.Bool(data_key="last")
+    Next = fields.String(data_key="next")
+    Prev = fields.String(data_key="prev")
+
+    @post_load
+    def make_userlist(self, data, **kwargs):
+        return UserList(**data)

@@ -30,7 +30,21 @@ hashtags = [
     "2020Election",
     "2020Elections",
     "Election",
-    "Elections"
+    "Elections",
+
+    "covid19",
+    "covid",
+    "covid19hoax",
+    "covid-19",
+    "covidhoax",
+    "covid1984",
+    "covidexplained",
+    "covid19fear",
+    "covid_19",
+    "covidhoax2020",
+    "covidiots",
+    "coviddeaths",
+    "CovidVaccine",
 ]
 interval = 2
 filename = "data/hashtags/%s_%s_%s.json"
