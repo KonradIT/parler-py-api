@@ -69,14 +69,16 @@ class Parler:
         elif response.status_code == 502:
             print('Bad Gateway Error, retry in 5 seconds')
             self.reconnects += 1
+            sleep(6)
 
         elif response.status_code == 429:
             print('Too many requests Error, retry in 5 seconds')
             self.reconnects += 1
+            sleep(65)
 
         else:
             self.reconnects = 0
-        
+
         return response
         
     """
@@ -91,9 +93,8 @@ class Parler:
             response = self.session.get(self.base_url + "/profile", params=params)
         if self.handle_response(response).status_code != 200:
             print(f'Status: {response.status_code}')
-            sleep(5)
             return self.profile(username)
-        
+
         return response.json()
 
     """
@@ -106,7 +107,7 @@ class Parler:
         response = self.session.get(self.base_url + "/hashtag",  params=params)
         if self.handle_response(response).status_code != 200:
             print(f'Status: {response.status_code}')
-            sleep(5)
+
             return self.hashtags(searchtag)
         return response.json()
 
@@ -123,7 +124,7 @@ class Parler:
         response = self.session.get(self.base_url + "/feed",  params=params)
         if self.handle_response(response).status_code != 200:
             print(f'Status: {response.status_code}')
-            sleep(5)
+
             return self.feed(limit,cursor)
         return response.json()
         
@@ -140,7 +141,7 @@ class Parler:
         response = self.session.get(self.base_url + "/notification",  params=params)
         if self.handle_response(response).status_code != 200:
             print(f'Status: {response.status_code}')
-            sleep(5)
+
             return self.notifications(limit, cursor)
         return response.json()
 
@@ -157,7 +158,7 @@ class Parler:
         response = self.session.get(self.base_url + "/discover/posts",  params=params)
         if self.handle_response(response).status_code != 200:
             print(f'Status: {response.status_code}')
-            sleep(5)
+
             return self.discover_feed(limit, cursor)
         return response.json()
 
@@ -176,6 +177,6 @@ class Parler:
         response = self.session.get(self.base_url + "/post/hashtag",  params=params)
         if self.handle_response(response).status_code != 200:
             print(f'Status: {response.status_code}')
-            sleep(5)
+
             return self.hashtags_feed(limit, cursor)
         return response.json()
