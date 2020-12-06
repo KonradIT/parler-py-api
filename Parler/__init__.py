@@ -4,6 +4,8 @@ import random
 import string
 import json
 from time import sleep
+import logging
+from errors import Errors
 
 class Parler:
 
@@ -15,7 +17,7 @@ class Parler:
             "password": password,
             "deviceId": "".join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(16))
         }
-        response = requests.post('https://api.parler.com/v2/login/new', data=json.dumps(data))
+        response = requests.post("https://api.parler.com/v2/login/new", data=json.dumps(data))
         return response.json()
     
     @staticmethod
@@ -24,7 +26,7 @@ class Parler:
             "identifier": key
         }
 
-        response = requests.post('https://api.parler.com/v2/login/captcha/new', data=json.dumps(data))
+        response = requests.post("https://api.parler.com/v2/login/captcha/new", data=json.dumps(data))
         return response.json()
 
     @staticmethod
@@ -34,12 +36,13 @@ class Parler:
             "solution":solution
         }
 
-        response = requests.post('https://api.parler.com/v2/login/captcha/submit',data=json.dumps(data))
+        response = requests.post("https://api.parler.com/v2/login/captcha/submit",data=json.dumps(data))
         return response.json()
+        
     """
     :param jst: short-term token
     :param mst: master token
-    :param debug: print debugging messages
+    :param debug: logging.info debugging messages
     """
     def __init__(self, jst: str, mst: str, debug: bool):
         self.jst = jst
@@ -52,6 +55,8 @@ class Parler:
         self.session.cookies.set("jst", jst)
         self.reconnects = 0
 
+        logging.basicConfig(encoding='utf-8', level=logging.DEBUG if self.debug else logging.INFO)
+
         
     """
     @helper response handler
@@ -62,16 +67,16 @@ class Parler:
         if self.reconnects >= 10:
             raise Exception ("Internal abort; 10 reconnect attemps")
         elif response.status_code >=400 and response.status_code <=428:
-            raise Exception ({'status':response.status_code,
-                              'error':response.reason,
-                             'English': "Most likely unauthorized or no results"})
+            raise Exception ({"status":response.status_code,
+                              "error":response.reason,
+                             "message": Errors.NoAuth})
             
         elif response.status_code == 502:
-            print('Bad Gateway Error, retry in 5 seconds')
+            logging.error("Bad Gateway Error, retry in 5 seconds")
             self.reconnects += 1
 
         elif response.status_code == 429:
-            print('Too many requests Error, retry in 5 seconds')
+            logging.error("Too many requests Error, retry in 5 seconds")
             self.reconnects += 1
 
         else:
@@ -90,7 +95,7 @@ class Parler:
             )
             response = self.session.get(self.base_url + "/profile", params=params)
         if self.handle_response(response).status_code != 200:
-            print(f'Status: {response.status_code}')
+            logging.error(f"Status: {response.status_code}")
             sleep(5)
             return self.profile(username)
         
@@ -105,7 +110,7 @@ class Parler:
         )
         response = self.session.get(self.base_url + "/hashtag",  params=params)
         if self.handle_response(response).status_code != 200:
-            print(f'Status: {response.status_code}')
+            logging.error(f"Status: {response.status_code}")
             sleep(5)
             return self.hashtags(searchtag)
         return response.json()
@@ -122,7 +127,7 @@ class Parler:
             params = params + (("startkey",cursor),)
         response = self.session.get(self.base_url + "/feed",  params=params)
         if self.handle_response(response).status_code != 200:
-            print(f'Status: {response.status_code}')
+            logging.error(f"Status: {response.status_code}")
             sleep(5)
             return self.feed(limit,cursor)
         return response.json()
@@ -139,7 +144,7 @@ class Parler:
             params = params + (("startkey",cursor),)
         response = self.session.get(self.base_url + "/notification",  params=params)
         if self.handle_response(response).status_code != 200:
-            print(f'Status: {response.status_code}')
+            logging.error(f"Status: {response.status_code}")
             sleep(5)
             return self.notifications(limit, cursor)
         return response.json()
@@ -156,7 +161,7 @@ class Parler:
             params = params + (("startkey",cursor),)
         response = self.session.get(self.base_url + "/discover/posts",  params=params)
         if self.handle_response(response).status_code != 200:
-            print(f'Status: {response.status_code}')
+            logging.error(f"Status: {response.status_code}")
             sleep(5)
             return self.discover_feed(limit, cursor)
         return response.json()
@@ -175,7 +180,7 @@ class Parler:
             params = params + (("startkey",cursor),)
         response = self.session.get(self.base_url + "/post/hashtag",  params=params)
         if self.handle_response(response).status_code != 200:
-            print(f'Status: {response.status_code}')
+            logging.error(f"Status: {response.status_code}")
             sleep(5)
             return self.hashtags_feed(limit, cursor)
         return response.json()

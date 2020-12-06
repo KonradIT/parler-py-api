@@ -1,4 +1,2 @@
 class Errors:
-	NotFound = {
-		"status":404
-	}
+	NoAuth = "Most likely unauthorized or no results"

@@ -2,7 +2,7 @@
 
 ![](https://i.imgur.com/CmAmSBF.jpg)
 
-This library designed to programatically fetch data from parler.com
+This **UNOFFICIAL** library designed to programatically fetch data from parler.com
 
 ## Authentication:
 
@@ -30,11 +30,32 @@ parlerctl.py: error: the following arguments are required: --show
 - hashtags
 - ingest
 
-## Experiments
+## Installation
+
+If using `pipenv`:
+
+```
+pipenv install
+pipenv shell
+```
+
+If using `pip`:
+
+```
+pip install -r requirements.txt
+```
+
+## Experiments:
 
 Collected the suggested hashtags for a 9 hour period, [data here](./sampledata/hashtags.csv)
 
-## Disclaimer
+Other experiments available as well.
+
+## Contributing:
+
+Feel free to improve the code, submit your experiments and sample code or fix bugs. Before submitting a PR, run `pep8` linter on your code.
+
+## Disclaimer:
 
 I am in now way affiliated with Parler, it's subsidiaries or any entity related to the company. I am not responsible for what you do with this Python package.
 

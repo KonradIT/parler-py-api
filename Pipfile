@@ -7,7 +7,6 @@ verify_ssl = true
 
 [packages]
 requests = "*"
-dotenv = "*"
 python-dotenv = "*"
 termcolor = "*"
 marshmallow = "*"
