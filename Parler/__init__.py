@@ -5,10 +5,11 @@ import string
 import json
 from time import sleep
 import logging
-from errors import Errors
 
 class Parler:
 
+    class Errors:
+	    NoAuth = "Most likely unauthorized or no results"
 
     @staticmethod
     def get_login_key(email, password):
@@ -54,8 +55,9 @@ class Parler:
         self.session.cookies.set("mst", mst)
         self.session.cookies.set("jst", jst)
         self.reconnects = 0
+        self.retry_delay = 5
 
-        logging.basicConfig(encoding='utf-8', level=logging.DEBUG if self.debug else logging.INFO)
+        logging.basicConfig(level=logging.DEBUG if self.debug else logging.ERROR)
 
         
     """
@@ -72,14 +74,14 @@ class Parler:
                              "message": Errors.NoAuth})
             
         elif response.status_code == 502:
-            logging.error("Bad Gateway Error, retry in 5 seconds")
+            logging.warning(f"Bad Gateway Error, retry in {self.retry_delay} seconds")
             self.reconnects += 1
-            sleep(6)
+            sleep(self.retry_delay)
 
         elif response.status_code == 429:
-            logging.error("Too many requests Error, retry in 5 seconds")
+            logging.warning(f"Too many requests Error, retry in {self.retry_delay} x10 seconds")
             self.reconnects += 1
-            sleep(65)
+            sleep({self.retry_delay} * 10)
 
         else:
             self.reconnects = 0
@@ -97,7 +99,7 @@ class Parler:
             )
             response = self.session.get(self.base_url + "/profile", params=params)
         if self.handle_response(response).status_code != 200:
-            logging.error(f"Status: {response.status_code}")
+            logging.warning(f"Status: {response.status_code}")
             return self.profile(username)
 
         return response.json()
@@ -111,7 +113,7 @@ class Parler:
         )
         response = self.session.get(self.base_url + "/hashtag",  params=params)
         if self.handle_response(response).status_code != 200:
-            logging.error(f"Status: {response.status_code}")
+            logging.warning(f"Status: {response.status_code}")
             return self.hashtags(searchtag)
         return response.json()
 
@@ -127,7 +129,7 @@ class Parler:
             params = params + (("startkey",cursor),)
         response = self.session.get(self.base_url + "/feed",  params=params)
         if self.handle_response(response).status_code != 200:
-            logging.error(f"Status: {response.status_code}")
+            logging.warning(f"Status: {response.status_code}")
             return self.feed(limit,cursor)
         return response.json()
         
@@ -143,7 +145,7 @@ class Parler:
             params = params + (("startkey",cursor),)
         response = self.session.get(self.base_url + "/notification",  params=params)
         if self.handle_response(response).status_code != 200:
-            logging.error(f"Status: {response.status_code}")
+            logging.warning(f"Status: {response.status_code}")
             return self.notifications(limit, cursor)
         return response.json()
 
@@ -159,7 +161,7 @@ class Parler:
             params = params + (("startkey",cursor),)
         response = self.session.get(self.base_url + "/discover/posts",  params=params)
         if self.handle_response(response).status_code != 200:
-            logging.error(f"Status: {response.status_code}")
+            logging.warning(f"Status: {response.status_code}")
             return self.discover_feed(limit, cursor)
         return response.json()
 
@@ -177,6 +179,6 @@ class Parler:
             params = params + (("startkey",cursor),)
         response = self.session.get(self.base_url + "/post/hashtag",  params=params)
         if self.handle_response(response).status_code != 200:
-            logging.error(f"Status: {response.status_code}")
+            logging.warning(f"Status: {response.status_code}")
             return self.hashtags_feed(limit, cursor)
         return response.json()

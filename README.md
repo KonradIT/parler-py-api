@@ -55,6 +55,11 @@ Other experiments available as well.
 
 Feel free to improve the code, submit your experiments and sample code or fix bugs. Before submitting a PR, run `pep8` linter on your code.
 
+
+## Donate:
+
+If you found this package useful, [consider donating](https://paypal.me/konradit).
+
 ## Disclaimer:
 
 I am in now way affiliated with Parler, it's subsidiaries or any entity related to the company. I am not responsible for what you do with this Python package.
