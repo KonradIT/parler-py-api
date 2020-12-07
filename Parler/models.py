@@ -1,4 +1,5 @@
 from marshmallow import Schema, fields, ValidationError, post_load, EXCLUDE
+import json
 
 
 class UserItem(Schema):
@@ -13,7 +14,7 @@ class UserItem(Schema):
     Muted = fields.Bool(data_key="muted")
     Name = fields.Str(data_key="name")
     Rss = fields.Bool(data_key="rss")
-    Private = fields.Bool(data_key="private")
+    Private = fields.Bool(data_key="private", allow_none=True)
     ProfilePhoto = fields.Str(data_key="profilePhoto")
     Username = fields.Str(data_key="username")
     Verified = fields.Bool(data_key="verified")
@@ -29,24 +30,36 @@ class PostItem(Schema):
     At = fields.Dict(data_key="@")
     Article = fields.Bool(data_key="article")
     Body = fields.String(data_key="body")
+    Color = fields.String(data_key="color")
+    CommentDepth = fields.Int(data_key="commentDepth")
+    Commented = fields.Bool(data_key="commented")
     Comments = fields.String(data_key="comments")
+    Controversy = fields.Int(data_key="controversy")
+    Conversation = fields.String(data_key="conversation")
     CreatedAt = fields.String(data_key="createdAt")
     Creator = fields.String(data_key="creator")
     Depth = fields.String(data_key="depth")
     DepthRaw = fields.Int(data_key="depthRaw")
+    Downvotes = fields.String(data_key="downvotes")
     Hashtags = fields.List(fields.String(),   data_key="hashtags")
     Impressions = fields.String(data_key="impressions")
+    IsPrimary = fields.Bool(data_key="isPrimary")
     Links = fields.List(fields.String(),   data_key="links")
+    Parent = fields.String(data_key="parent")
+    Post = fields.String(data_key="post")
     Preview = fields.String(data_key="preview")
+    ReplyingTo = fields.String(data_key="replyingTo")
+    Reposted = fields.Bool(data_key="reposted")
     Reposts = fields.String(data_key="reposts")
     ShareLink = fields.String(data_key="shareLink")
     State = fields.Int(data_key="state")
     Upvotes = fields.String(data_key="upvotes")
     Parent = fields.String(data_key="parent")
+    Score = fields.String(data_key="score")
     Sponsored = fields.String(data_key="sponsored")
     Sensitive = fields.Bool(data_key="sensitive")
     Root = fields.String(data_key="root")
-
+    Voted = fields.String(data_key="voted")
 
 class LinkItem(Schema):
     Id = fields.String(data_key="_id")
@@ -74,22 +87,27 @@ class Feed():
 
 
 class FeedSchema(Schema):
+    """For newsfeed, user posts, or user comments."""
     Badge = fields.Int(data_key="badge")
     BadgeString = fields.String(data_key="badgeString")
     Last = fields.Bool(data_key="last")
     Next = fields.String(data_key="next")
     PendingFollowers = fields.Int(data_key="pendingFollowers")
     Prev = fields.String(data_key="prev")
-
     Items = fields.List(fields.Nested(PostItem), data_key="posts")
-    Users = fields.List(fields.Nested(UserItem), data_key="users")
-    Links = fields.List(fields.Nested(LinkItem), data_key="urls")
+    Comments = fields.List(fields.Nested(PostItem), data_key="comments")
+    Users = fields.List(fields.Nested(UserItem), data_key="users", allow_none=True)
+    Links = fields.List(fields.Nested(LinkItem), data_key="urls", allow_none=True)
 
     class Meta:
         unknown = EXCLUDE
 
     @post_load
     def make_feed(self, data, **kwargs):
+        # print(json.dumps(data, indent=1))
+        if "Comments" in data.keys():
+            data["Items"] = data["Comments"].copy()
+            del data["Comments"]
         return Feed(**data)
 
 class UserList():
