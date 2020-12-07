@@ -132,8 +132,8 @@ class Parler:
         return response.json()
 
     """
-    :param item_type: type of items created ('post' or 'comment')
-    :param username: username to get posts
+    :param item_type: type of created items to list ('post' or 'comment')
+    :param username: username to get posts or comments
     :param limit: limit
     :param cursor: string to id the next items
     """
