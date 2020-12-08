@@ -20,7 +20,7 @@ class Parler:
         }
         response = requests.post("https://api.parler.com/v2/login/new", data=json.dumps(data))
         return response.json()
-    
+
     @staticmethod
     def get_chapta_image(key):
         data = {
@@ -39,7 +39,7 @@ class Parler:
 
         response = requests.post("https://api.parler.com/v2/login/captcha/submit",data=json.dumps(data))
         return response.json()
-        
+
     """
     :param jst: short-term token
     :param mst: master token
@@ -55,39 +55,37 @@ class Parler:
         self.session.cookies.set("mst", mst)
         self.session.cookies.set("jst", jst)
         self.reconnects = 0
-        self.retry_delay = 5
+        self.retry_delay = 2
 
         logging.basicConfig(level=logging.DEBUG if self.debug else logging.ERROR)
 
-        
     """
     @helper response handler
     pass an http response through to check for specific codes
     """
-    
     def handle_response(self,response):
         if self.reconnects >= 10:
             raise Exception ("Internal abort; 10 reconnect attemps")
         elif response.status_code >=400 and response.status_code <=428:
             raise Exception ({"status":response.status_code,
                               "error":response.reason,
-                             "message": Errors.NoAuth})
-            
+                             "message": self.Errors.NoAuth})
+
         elif response.status_code == 502:
             logging.warning(f"Bad Gateway Error, retry in {self.retry_delay} seconds")
             self.reconnects += 1
             sleep(self.retry_delay)
 
         elif response.status_code == 429:
-            logging.warning(f"Too many requests Error, retry in {self.retry_delay} x10 seconds")
+            logging.warning(f"Too many requests Error, retry in {self.retry_delay} seconds")
             self.reconnects += 1
-            sleep({self.retry_delay} * 10)
+            sleep(self.retry_delay)
 
         else:
             self.reconnects = 0
 
         return response
-        
+
     """
     :param username: Username to fetch
     """
@@ -132,7 +130,42 @@ class Parler:
             logging.warning(f"Status: {response.status_code}")
             return self.feed(limit,cursor)
         return response.json()
-        
+
+    """
+    :param item_type: type of created items to list ('post' or 'comment')
+    :param username: username to get posts or comments
+    :param limit: limit
+    :param cursor: string to id the next items
+    """
+    def created_items(self, item_type="post", username="", limit=10, cursor="") -> dict:
+        params = (
+            ("username", username),
+            ("limit", limit)
+        )
+        if cursor != "":
+            params = params + (("startkey",cursor),)
+        response = self.session.get(self.base_url + "/" + item_type + "/creator",  params=params)
+        if self.handle_response(response).status_code != 200:
+            logging.warning(f"Status: {response.status_code}")
+            return self.hashtags(searchtag)
+        return response.json()
+
+
+    """
+    :param item_type: type of item to delete ('post' or 'comment')
+    :param id: id of item to delete
+    """
+    def delete_item(self, item_type, id):
+        if item_type == 'echo':  # delete echo using post api
+            item_type = 'post'
+        params = (
+            ("id", id),
+        )
+        response = self.session.post(self.base_url + "/" + item_type + "/delete", params=params)
+        if self.handle_response(response).status_code != 200:
+            logging.warning(f"Status: {response.status_code}")
+        return response.json()
+
     """
     :param limit: limit
     :param cursor: string to id the next items
