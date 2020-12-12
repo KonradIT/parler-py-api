@@ -1,66 +1,66 @@
-from marshmallow import Schema, fields, ValidationError, post_load, EXCLUDE
+from marshmallow import Schema, fields, ValidationError, post_load, EXCLUDE, INCLUDE
 import json
 
 
 class UserItem(Schema):
-    Id = fields.Str(data_key="id")
-    Bio = fields.Str(data_key="bio")
-    Blocked = fields.Bool(data_key="blocked")
-    CoverPhoto = fields.Str(data_key="coverPhoto")
-    Followed = fields.Bool(data_key="followed")
-    Human = fields.Bool(data_key="human")
-    Integration = fields.Bool(data_key="integration")
-    Joined = fields.Str(data_key="joined")
-    Muted = fields.Bool(data_key="muted")
-    Name = fields.Str(data_key="name")
-    Rss = fields.Bool(data_key="rss")
+    Id = fields.Str(data_key="id", default="", missing="")
+    Bio = fields.Str(data_key="bio", default="", missing="")
+    Blocked = fields.Bool(data_key="blocked", default="", missing="")
+    CoverPhoto = fields.Str(data_key="coverPhoto", default="", missing="")
+    Followed = fields.Bool(data_key="followed", default="", missing="")
+    Human = fields.Bool(data_key="human", default="", missing="")
+    Integration = fields.Bool(data_key="integration", default="", missing="")
+    Joined = fields.Str(data_key="joined", default="", missing="")
+    Muted = fields.Bool(data_key="muted", default="", missing="")
+    Name = fields.Str(data_key="name", default="", missing="")
+    Rss = fields.Bool(data_key="rss", default="", missing="")
     Private = fields.Bool(data_key="private", allow_none=True)
-    ProfilePhoto = fields.Str(data_key="profilePhoto")
-    Username = fields.Str(data_key="username")
-    Verified = fields.Bool(data_key="verified")
-    VerifiedComments = fields.Bool(data_key="verifiedComments")
-    Score = fields.Str(data_key="score")
-    Interactions = fields.Int(data_key="interactions")
+    ProfilePhoto = fields.Str(data_key="profilePhoto", default="", missing="")
+    Username = fields.Str(data_key="username", default="", missing="")
+    Verified = fields.Bool(data_key="verified", default="", missing="")
+    VerifiedComments = fields.Bool(data_key="verifiedComments", default="", missing="")
+    Score = fields.Str(data_key="score", default="", missing="")
+    Interactions = fields.Int(data_key="interactions", default="", missing="")
     class Meta:
         unknown = EXCLUDE
 
 class PostItem(Schema):
-    Id = fields.String(data_key="_id")
-    Id2 = fields.String(data_key="id")
-    At = fields.Dict(data_key="@")
-    Article = fields.Bool(data_key="article")
-    Body = fields.String(data_key="body")
-    Color = fields.String(data_key="color")
-    CommentDepth = fields.Int(data_key="commentDepth")
-    Commented = fields.Bool(data_key="commented")
-    Comments = fields.String(data_key="comments")
-    Controversy = fields.Int(data_key="controversy")
-    Conversation = fields.String(data_key="conversation")
-    CreatedAt = fields.String(data_key="createdAt")
-    Creator = fields.String(data_key="creator")
-    Depth = fields.String(data_key="depth")
-    DepthRaw = fields.Int(data_key="depthRaw")
-    Downvotes = fields.String(data_key="downvotes")
-    Hashtags = fields.List(fields.String(),   data_key="hashtags")
-    Impressions = fields.String(data_key="impressions")
-    IsPrimary = fields.Bool(data_key="isPrimary")
-    Links = fields.List(fields.String(),   data_key="links")
-    Parent = fields.String(data_key="parent")
-    Post = fields.String(data_key="post")
-    Preview = fields.String(data_key="preview")
-    ReplyingTo = fields.String(data_key="replyingTo")
-    Reposted = fields.Bool(data_key="reposted")
-    Reposts = fields.String(data_key="reposts")
-    ShareLink = fields.String(data_key="shareLink")
-    State = fields.Int(data_key="state")
-    Upvotes = fields.String(data_key="upvotes")
-    Parent = fields.String(data_key="parent")
-    Score = fields.String(data_key="score")
-    Sponsored = fields.String(data_key="sponsored")
-    Sensitive = fields.Bool(data_key="sensitive")
-    Root = fields.String(data_key="root")
-    Voted = fields.String(data_key="voted")
-
+    Id = fields.String(data_key="_id", default="", missing="")
+    Id2 = fields.String(data_key="id", default="", missing="")
+    At = fields.Dict(data_key="@", default="", missing="")
+    Article = fields.Bool(data_key="article", default="", missing="")
+    Body = fields.String(data_key="body", default="", missing="")
+    Color = fields.String(data_key="color", default="", missing="")
+    CommentDepth = fields.Int(data_key="commentDepth", default="", missing="")
+    Commented = fields.Bool(data_key="commented", default="", missing="")
+    Comments = fields.String(data_key="comments", default="", missing="")
+    Controversy = fields.Int(data_key="controversy", default="", missing="")
+    Conversation = fields.String(data_key="conversation", default="", missing="")
+    CreatedAt = fields.String(data_key="createdAt", default="", missing="")
+    Creator = fields.String(data_key="creator", default="", missing="")
+    Depth = fields.String(data_key="depth", default="", missing="")
+    DepthRaw = fields.Int(data_key="depthRaw", default="", missing="")
+    Downvotes = fields.String(data_key="downvotes", default="", missing="")
+    Hashtags = fields.List(fields.String(),   data_key="hashtags", default="", missing="")
+    Impressions = fields.String(data_key="impressions", default="", missing="")
+    IsPrimary = fields.Bool(data_key="isPrimary", default="", missing="")
+    Links = fields.List(fields.String(),   data_key="links", default="", missing="")
+    Post = fields.String(data_key="post", default="", missing="")
+    Preview = fields.String(data_key="preview", default="", missing="")
+    ReplyingTo = fields.String(data_key="replyingTo", default="", missing="")
+    Reposted = fields.Bool(data_key="reposted", default="", missing="")
+    Reposts = fields.String(data_key="reposts", default="", missing="")
+    ShareLink = fields.String(data_key="shareLink", default="", missing="")
+    State = fields.Int(data_key="state", default="", missing="")
+    Upvotes = fields.String(data_key="upvotes", default="", missing="")
+    Parent = fields.String(data_key="parent", default="", missing="")
+    Score = fields.String(data_key="score", default="", missing="")
+    Sponsored = fields.String(data_key="sponsored", default="", missing="")
+    Sensitive = fields.Bool(data_key="sensitive", default="", missing="")
+    Root = fields.String(data_key="root", default="", missing="")
+    Voted = fields.String(data_key="voted", default="", missing="")
+    class Meta:
+            unknown = EXCLUDE
 class LinkItem(Schema):
     Id = fields.String(data_key="_id")
     CreatedAt = fields.String(data_key="createdAt")
@@ -71,7 +71,9 @@ class LinkItem(Schema):
     Short = fields.String(data_key="short")
     State = fields.String(data_key="state")
     class Meta:
-        unknown = EXCLUDE
+        strict = True
+        unknown = INCLUDE
+        postprocess = True
 
 class Feed():
     def __init__(self, Badge, BadgeString, Last, Next, PendingFollowers, Prev, Items, Users, Links):
@@ -88,8 +90,8 @@ class Feed():
 
 class FeedSchema(Schema):
     """For newsfeed, user posts, or user comments."""
-    Badge = fields.Int(data_key="badge")
-    BadgeString = fields.String(data_key="badgeString")
+    Badge = fields.Int(data_key="badge" )
+    BadgeString = fields.String(data_key="badgeString" )
     Last = fields.Bool(data_key="last")
     Next = fields.String(data_key="next")
     PendingFollowers = fields.Int(data_key="pendingFollowers")

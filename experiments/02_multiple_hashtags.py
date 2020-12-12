@@ -1,5 +1,4 @@
 from dotenv import load_dotenv
-import json
 import time
 import os
 import sys
@@ -8,6 +7,8 @@ import datetime
 import random
 sys.path.insert(1, os.path.join(sys.path[0], ".."))
 from Parler import Parler, models
+import traceback
+import exputils
 
 load_dotenv(dotenv_path=".parler.env")
 parler = Parler(jst=os.getenv("JST"), mst=os.getenv("MST"), debug=False)
@@ -59,15 +60,22 @@ def get_posts(hashtag):
             feed = models.FeedSchema().load(data)
             break
         except:
+            traceback.print_exc()
             time.sleep(20)
+    with open(filename % (hashtag, str(datetime.date.today()), "posts"), mode="a") as posts:
+        exputils.writetocsv(posts, feed.items, insert_headers=True)
+    with open(filename % (hashtag, str(datetime.date.today()), "users"), mode="a") as users:
+        exputils.writetocsv(users, feed.users, insert_headers=True)
+    with open(filename % (hashtag, str(datetime.date.today()), "links"), mode="a") as links:
+        exputils.writetocsv(links, feed.links, insert_headers=True)
     while feed.last == False:
         time.sleep(random.randint(1, 20))
         with open(filename % (hashtag, str(datetime.date.today()), "posts"), mode="a") as posts:
-            json.dump(feed.items, posts)
+            exputils.writetocsv(posts, feed.items, insert_headers=False)
         with open(filename % (hashtag, str(datetime.date.today()), "users"), mode="a") as users:
-            json.dump(feed.users, users)
+            exputils.writetocsv(users, feed.users, insert_headers=False)
         with open(filename % (hashtag, str(datetime.date.today()), "links"), mode="a") as links:
-            json.dump(feed.links, links)
+            exputils.writetocsv(links, feed.links, insert_headers=False)
 
         while True:
             try:
@@ -75,6 +83,7 @@ def get_posts(hashtag):
                 feed = models.FeedSchema().load(data)
                 break
             except:
+                traceback.print_exc()
                 time.sleep(20)
 
 

@@ -85,17 +85,23 @@ class Parler:
             self.reconnects = 0
 
         return response
-
+    
+    def get(self, path, **kwargs):
+        return self.session.get(self.base_url + path, **kwargs)
+    
+    def post(self, path, **kwargs):
+        return self.session.post(self.base_url + path, **kwargs)
+        
     """
     :param username: Username to fetch
     """
     def profile(self, username=None) -> dict:
-        response = self.session.get(self.base_url + "/profile")
+        response = self.get("/profile")
         if username is not None:
             params = (
                 ("username", username),
             )
-            response = self.session.get(self.base_url + "/profile", params=params)
+            response = self.get("/profile", params=params)
         if self.handle_response(response).status_code != 200:
             logging.warning(f"Status: {response.status_code}")
             return self.profile(username)
@@ -109,7 +115,7 @@ class Parler:
         params = (
             ("search", searchtag),
         )
-        response = self.session.get(self.base_url + "/hashtag",  params=params)
+        response = self.get("/hashtag",  params=params)
         if self.handle_response(response).status_code != 200:
             logging.warning(f"Status: {response.status_code}")
             return self.hashtags(searchtag)
@@ -125,7 +131,7 @@ class Parler:
         )
         if cursor != "":
             params = params + (("startkey",cursor),)
-        response = self.session.get(self.base_url + "/feed",  params=params)
+        response = self.get("/feed",  params=params)
         if self.handle_response(response).status_code != 200:
             logging.warning(f"Status: {response.status_code}")
             return self.feed(limit,cursor)
@@ -176,7 +182,7 @@ class Parler:
         )
         if cursor != "":
             params = params + (("startkey",cursor),)
-        response = self.session.get(self.base_url + "/notification",  params=params)
+        response = self.get("/notification",  params=params)
         if self.handle_response(response).status_code != 200:
             logging.warning(f"Status: {response.status_code}")
             return self.notifications(limit, cursor)
@@ -192,7 +198,7 @@ class Parler:
         )
         if cursor != "":
             params = params + (("startkey",cursor),)
-        response = self.session.get(self.base_url + "/discover/posts",  params=params)
+        response = self.get("/discover/posts",  params=params)
         if self.handle_response(response).status_code != 200:
             logging.warning(f"Status: {response.status_code}")
             return self.discover_feed(limit, cursor)
@@ -210,7 +216,26 @@ class Parler:
         )
         if cursor != "":
             params = params + (("startkey",cursor),)
-        response = self.session.get(self.base_url + "/post/hashtag",  params=params)
+        response = self.get("/post/hashtag",  params=params)
+        if self.handle_response(response).status_code != 200:
+            logging.warning(f"Status: {response.status_code}")
+            return self.hashtags_feed(limit, cursor)
+        return response.json()
+    
+    """
+    :param creator_id: creator ID from user, NOT username!!
+    :param limit: limit
+    :param cursor: string to id the next items
+    """
+    def user_feed(self, creator_id, limit=10, cursor="") -> dict:
+        params = (
+            ('id', creator_id),
+            ('limit', limit),
+        )
+
+        if cursor != "":
+            params = params + (("startkey",cursor),)
+        response = self.get("/post/creator",  params=params)
         if self.handle_response(response).status_code != 200:
             logging.warning(f"Status: {response.status_code}")
             return self.hashtags_feed(limit, cursor)
