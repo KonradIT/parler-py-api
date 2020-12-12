@@ -47,13 +47,13 @@ hashtags = [
     "coviddeaths",
     "CovidVaccine",
 ]
-interval = 2
-filename = "data/hashtags/%s_%s_%s.json"
 
+filename = "data/hashtags/%s_%s_%s.json"
+max_sleep_limit= 300
 
 def get_posts(hashtag):
     print("Starting collection of posts with hashtag %s" % hashtag)
-    time.sleep(random.randint(1, 20))
+    time.sleep(random.randint(1, max_sleep_limit))
     while True:
         try:
             data = parler.hashtags_feed(hashtag, 100, cursor="")
@@ -61,7 +61,7 @@ def get_posts(hashtag):
             break
         except:
             traceback.print_exc()
-            time.sleep(20)
+            time.sleep(max_sleep_limit)
     with open(filename % (hashtag, str(datetime.date.today()), "posts"), mode="a") as posts:
         exputils.writetocsv(posts, feed.items, insert_headers=True)
     with open(filename % (hashtag, str(datetime.date.today()), "users"), mode="a") as users:
@@ -69,7 +69,7 @@ def get_posts(hashtag):
     with open(filename % (hashtag, str(datetime.date.today()), "links"), mode="a") as links:
         exputils.writetocsv(links, feed.links, insert_headers=True)
     while feed.last == False:
-        time.sleep(random.randint(1, 20))
+        time.sleep(random.randint(1, max_sleep_limit))
         with open(filename % (hashtag, str(datetime.date.today()), "posts"), mode="a") as posts:
             exputils.writetocsv(posts, feed.items, insert_headers=False)
         with open(filename % (hashtag, str(datetime.date.today()), "users"), mode="a") as users:
@@ -84,7 +84,7 @@ def get_posts(hashtag):
                 break
             except:
                 traceback.print_exc()
-                time.sleep(20)
+                time.sleep(max_sleep_limit)
 
 
 for hashtag in hashtags:
