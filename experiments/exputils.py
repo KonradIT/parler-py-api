@@ -12,12 +12,12 @@ def writetocsv(file, iterable, insert_headers=None):
         if not wroteheader and insert_headers is not None and insert_headers:
             fieldnames = item.keys()
             writer = csv.DictWriter(
-                file, fieldnames=fieldnames, delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
+                file, fieldnames=fieldnames, delimiter=",", quotechar="\"", quoting=csv.QUOTE_ALL)
             writer.writeheader()
             wroteheader = True
         fieldnames = item.keys()
         writer = csv.DictWriter(file, fieldnames=fieldnames,
-                                delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
+                                delimiter=",", quotechar="\"", quoting=csv.QUOTE_ALL)
         for k, v in item.items():
            
             if isinstance(v, str):

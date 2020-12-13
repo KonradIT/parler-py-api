@@ -37,7 +37,7 @@ with open("users_%s.csv" % str(datetime.date.today()), mode="w") as csv_file:
 			if not wroteheader:
 				fieldnames = user.keys()
 				try:
-					writer = csv.DictWriter(csv_file, fieldnames=fieldnames, delimiter=",", quotechar="\"", quoting=csv.QUOTE_MINIMAL)
+					writer = csv.DictWriter(csv_file, fieldnames=fieldnames, delimiter=",", quotechar="\"", quoting=csv.QUOTE_ALL)
 				except: continue
 				writer.writeheader()
 				wroteheader=True
