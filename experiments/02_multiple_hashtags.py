@@ -48,7 +48,7 @@ hashtags = [
     "CovidVaccine",
 ]
 
-filename = "data/hashtags/%s_%s_%s.json"
+filename = "data/hashtags/%s_%s_%s.csv"
 max_sleep_limit= 300
 
 def get_posts(hashtag):

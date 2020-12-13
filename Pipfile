@@ -10,6 +10,7 @@ requests = "*"
 python-dotenv = "*"
 termcolor = "*"
 marshmallow = "*"
+fake-useragent = "*"
 
 [requires]
 python_version = "3.8"

@@ -5,6 +5,10 @@ import string
 import json
 from time import sleep
 import logging
+from fake_useragent import UserAgent
+import configparser
+
+ua = UserAgent()
 
 class Parler:
 
@@ -45,7 +49,7 @@ class Parler:
     :param mst: master token
     :param debug: logging.info debugging messages
     """
-    def __init__(self, jst: str, mst: str, debug: bool):
+    def __init__(self, jst: str, mst: str, debug: bool, config_file: string = None):
         self.jst = jst
         self.mst = mst
         self.debug = debug
@@ -54,8 +58,21 @@ class Parler:
 
         self.session.cookies.set("mst", mst)
         self.session.cookies.set("jst", jst)
+        self.session.headers["User-Agent"] = ua.random
+
+        # Default values
         self.reconnects = 0
         self.retry_delay = 2
+        self.max_reconnects = 20
+        
+        if config_file is not None:
+            config = configparser.ConfigParser()
+            config.read(config_file)
+            if "connection" in config and \
+                   "retry_delay" in config["connection"] and \
+                   "max_reconnects" in config["connection"]:
+                self.retry_delay = config["connection"]["retry_delay"]
+                self.max_reconnects = config["connection"]["max_reconnects"]
 
         logging.basicConfig(level=logging.DEBUG if self.debug else logging.ERROR)
 
@@ -64,8 +81,8 @@ class Parler:
     pass an http response through to check for specific codes
     """
     def handle_response(self,response):
-        if self.reconnects >= 10:
-            raise Exception ("Internal abort; 10 reconnect attemps")
+        if self.reconnects >= self.max_reconnects:
+            raise Exception ("Internal abort; {} reconnect attemps".format(self.max_reconnects))
         elif response.status_code >=400 and response.status_code <=428:
             raise Exception ({"status":response.status_code,
                               "error":response.reason,
