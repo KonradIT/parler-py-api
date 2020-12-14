@@ -5,6 +5,8 @@ import string
 import json
 from time import sleep
 import logging
+from logging.handlers import SocketHandler
+
 from fake_useragent import UserAgent
 import configparser
 
@@ -60,6 +62,8 @@ class Parler:
         self.session.cookies.set("jst", jst)
         self.session.headers["User-Agent"] = ua.random
 
+        self._log = logging.getLogger("parler-py-api")
+
         # Default values
         self.reconnects = 0
         self.retry_delay = 2
@@ -73,9 +77,8 @@ class Parler:
                    "max_reconnects" in config["connection"]:
                 self.retry_delay = config["connection"]["retry_delay"]
                 self.max_reconnects = config["connection"]["max_reconnects"]
-
-        logging.basicConfig(level=logging.DEBUG if self.debug else logging.ERROR)
-
+        self._log.setLevel(level=logging.DEBUG if self.debug else logging.ERROR)
+        self._log.info("program started")
     """
     @helper response handler
     pass an http response through to check for specific codes
@@ -89,12 +92,12 @@ class Parler:
                              "message": self.Errors.NoAuth})
 
         elif response.status_code == 502:
-            logging.warning(f"Bad Gateway Error, retry in {self.retry_delay} seconds")
+            self._log.warning(f"Bad Gateway Error, retry in {self.retry_delay} seconds")
             self.reconnects += 1
             sleep(self.retry_delay)
 
         elif response.status_code == 429:
-            logging.warning(f"Too many requests Error, retry in {self.retry_delay} seconds")
+            self._log.warning(f"Too many requests Error, retry in {self.retry_delay} seconds")
             self.reconnects += 1
             sleep(self.retry_delay)
 
@@ -120,7 +123,7 @@ class Parler:
             )
             response = self.get("/profile", params=params)
         if self.handle_response(response).status_code != 200:
-            logging.warning(f"Status: {response.status_code}")
+            self._log.warning(f"Status: {response.status_code}")
             return self.profile(username)
 
         return response.json()
@@ -134,7 +137,7 @@ class Parler:
         )
         response = self.get("/hashtag",  params=params)
         if self.handle_response(response).status_code != 200:
-            logging.warning(f"Status: {response.status_code}")
+            self._log.warning(f"Status: {response.status_code}")
             return self.hashtags(searchtag)
         return response.json()
 
@@ -150,7 +153,7 @@ class Parler:
             params = params + (("startkey",cursor),)
         response = self.get("/feed",  params=params)
         if self.handle_response(response).status_code != 200:
-            logging.warning(f"Status: {response.status_code}")
+            self._log.warning(f"Status: {response.status_code}")
             return self.feed(limit,cursor)
         return response.json()
 
@@ -169,7 +172,7 @@ class Parler:
             params = params + (("startkey",cursor),)
         response = self.session.get(self.base_url + "/" + item_type + "/creator",  params=params)
         if self.handle_response(response).status_code != 200:
-            logging.warning(f"Status: {response.status_code}")
+            self._log.warning(f"Status: {response.status_code}")
             return self.created_items(item_type=item_type, username=username, limit=limit, cursor=cursor)
         return response.json()
 
@@ -186,7 +189,7 @@ class Parler:
         )
         response = self.session.post(self.base_url + "/" + item_type + "/delete", params=params)
         if self.handle_response(response).status_code != 200:
-            logging.warning(f"Status: {response.status_code}")
+            self._log.warning(f"Status: {response.status_code}")
             return self.delete_item(item_type=item_type, id=id)
         return response.json()
 
@@ -202,7 +205,7 @@ class Parler:
             params = params + (("startkey",cursor),)
         response = self.get("/notification",  params=params)
         if self.handle_response(response).status_code != 200:
-            logging.warning(f"Status: {response.status_code}")
+            self._log.warning(f"Status: {response.status_code}")
             return self.notifications(limit, cursor)
         return response.json()
 
@@ -218,7 +221,7 @@ class Parler:
             params = params + (("startkey",cursor),)
         response = self.get("/discover/posts",  params=params)
         if self.handle_response(response).status_code != 200:
-            logging.warning(f"Status: {response.status_code}")
+            self._log.warning(f"Status: {response.status_code}")
             return self.discover_feed(limit, cursor)
         return response.json()
 
@@ -236,7 +239,7 @@ class Parler:
             params = params + (("startkey",cursor),)
         response = self.get("/post/hashtag",  params=params)
         if self.handle_response(response).status_code != 200:
-            logging.warning(f"Status: {response.status_code}")
+            self._log.warning(f"Status: {response.status_code}")
             return self.hashtags_feed(limit, cursor)
         return response.json()
     
@@ -255,7 +258,7 @@ class Parler:
             params = params + (("startkey",cursor),)
         response = self.get("/post/creator",  params=params)
         if self.handle_response(response).status_code != 200:
-            logging.warning(f"Status: {response.status_code}")
+            self._log.warning(f"Status: {response.status_code}")
             return self.user_feed(creator_id=creator_id, limit=limit, cursor=cursor)
         return response.json()
 
@@ -268,7 +271,7 @@ class Parler:
         )
         response = self.get(self.base_url + "/users", params=params)
         if self.handle_response(response).status_code != 200:
-            logging.warning(f"Status: {response.status_code}")
+            self._log.warning(f"Status: {response.status_code}")
             return self.users(searchtag=searchtag)
         return response.json()
 
@@ -286,7 +289,7 @@ class Parler:
         }
         response = self.post(self.base_url + "/follow", params=params, data=data, headers=headers)
         if self.handle_response(response).status_code != 200:
-            logging.warning(f"Status: {response.status_code}")
+            self._log.warning(f"Status: {response.status_code}")
             return self.follow_user(username=username)
         return response.json()
     
@@ -296,6 +299,6 @@ class Parler:
         )
         response = self.get(self.base_url + "/followers", params=params)
         if self.handle_response(response).status_code != 200:
-            logging.warning(f"Status: {response.status_code}")
+            self._log.warning(f"Status: {response.status_code}")
             return self.followers(creator_id=creator_id)
         return response.json()

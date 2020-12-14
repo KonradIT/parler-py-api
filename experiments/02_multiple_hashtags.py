@@ -1,3 +1,4 @@
+import logging
 from dotenv import load_dotenv
 import time
 import os
@@ -11,7 +12,7 @@ import traceback
 import exputils
 
 load_dotenv(dotenv_path=".parler.env")
-parler = Parler(jst=os.getenv("JST"), mst=os.getenv("MST"), debug=False)
+parler = Parler(jst=os.getenv("JST"), mst=os.getenv("MST"), debug=True)
 
 
 hashtags = [
@@ -48,9 +49,10 @@ hashtags = [
     "CovidVaccine",
 ]
 
-filename = "data/hashtags/%s_%s_%s.csv"
+filename = "data/hashtags2/%s_%s_%s.csv"
 max_sleep_limit= 300
 
+logging.basicConfig(level=logging.DEBUG)
 def get_posts(hashtag):
     print("Starting collection of posts with hashtag %s" % hashtag)
     time.sleep(random.randint(1, max_sleep_limit))
@@ -78,6 +80,7 @@ def get_posts(hashtag):
             traceback.print_exc()
             time.sleep(max_sleep_limit)
         finally:
+            logging.info("Writing to file...")
             with open(filename % (hashtag, str(datetime.date.today()), "posts"), mode="a") as posts:
                 exputils.writetocsv(posts, feed.items, insert_headers=False)
             with open(filename % (hashtag, str(datetime.date.today()), "users"), mode="a") as users:

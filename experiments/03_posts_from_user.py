@@ -23,6 +23,7 @@ parler = Parler(jst=os.getenv("JST"), mst=os.getenv("MST"), debug=True)
 filename = "%s/data/usernames/%s_%s_%s.csv"
 max_sleep_limit = 5
 
+logging.basicConfig(level=logging.DEBUG)
 def get_posts(username, output_dir):
     logging.info("Starting collection of posts from user %s" % username)
     
