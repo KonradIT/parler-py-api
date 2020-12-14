@@ -170,7 +170,7 @@ class Parler:
         response = self.session.get(self.base_url + "/" + item_type + "/creator",  params=params)
         if self.handle_response(response).status_code != 200:
             logging.warning(f"Status: {response.status_code}")
-            return self.hashtags(searchtag)
+            return self.created_items(item_type=item_type, username=username, limit=limit, cursor=cursor)
         return response.json()
 
 
@@ -187,6 +187,7 @@ class Parler:
         response = self.session.post(self.base_url + "/" + item_type + "/delete", params=params)
         if self.handle_response(response).status_code != 200:
             logging.warning(f"Status: {response.status_code}")
+            return self.delete_item(item_type=item_type, id=id)
         return response.json()
 
     """
@@ -255,7 +256,7 @@ class Parler:
         response = self.get("/post/creator",  params=params)
         if self.handle_response(response).status_code != 200:
             logging.warning(f"Status: {response.status_code}")
-            return self.hashtags_feed(limit, cursor)
+            return self.user_feed(creator_id=creator_id, limit=limit, cursor=cursor)
         return response.json()
 
     """
@@ -265,11 +266,15 @@ class Parler:
         params = (
             ("search", searchtag),
         )
-        response = self.session.get(self.base_url + "/users", params=params)
-        if response.status_code != 200:
-            raise Exception({"status": response.status_code})
+        response = self.get(self.base_url + "/users", params=params)
+        if self.handle_response(response).status_code != 200:
+            logging.warning(f"Status: {response.status_code}")
+            return self.users(searchtag=searchtag)
         return response.json()
 
+    """
+    :param username: username
+    """
     def follow_user(self, username) -> dict:
         params = (
             ("username", username),
@@ -279,7 +284,18 @@ class Parler:
             'Accept': 'application/json, text/plain, */*',
             'Content-Type': 'application/json',
         }
-        response = self.session.post(self.base_url + "/follow", params=params, data=data, headers=headers)
-        if response.status_code != 200:
-            raise Exception({"status": response.status_code})
+        response = self.post(self.base_url + "/follow", params=params, data=data, headers=headers)
+        if self.handle_response(response).status_code != 200:
+            logging.warning(f"Status: {response.status_code}")
+            return self.follow_user(username=username)
+        return response.json()
+    
+    def followers(self, creator_id) -> dict:
+        params = (
+            ("id", creator_id),
+        )
+        response = self.get(self.base_url + "/followers", params=params)
+        if self.handle_response(response).status_code != 200:
+            logging.warning(f"Status: {response.status_code}")
+            return self.followers(creator_id=creator_id)
         return response.json()
