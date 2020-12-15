@@ -12,6 +12,7 @@ import configparser
 
 ua = UserAgent()
 
+
 class Parler:
 
     class Errors:
@@ -24,7 +25,8 @@ class Parler:
             "password": password,
             "deviceId": "".join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(16))
         }
-        response = requests.post("https://api.parler.com/v2/login/new", data=json.dumps(data))
+        response = requests.post(
+            "https://api.parler.com/v2/login/new", data=json.dumps(data))
         return response.json()
 
     @staticmethod
@@ -33,17 +35,19 @@ class Parler:
             "identifier": key
         }
 
-        response = requests.post("https://api.parler.com/v2/login/captcha/new", data=json.dumps(data))
+        response = requests.post(
+            "https://api.parler.com/v2/login/captcha/new", data=json.dumps(data))
         return response.json()
 
     @staticmethod
     def submit_chapta(key, solution):
-        data ={
+        data = {
             "identifier": key,
-            "solution":solution
+            "solution": solution
         }
 
-        response = requests.post("https://api.parler.com/v2/login/captcha/submit",data=json.dumps(data))
+        response = requests.post(
+            "https://api.parler.com/v2/login/captcha/submit", data=json.dumps(data))
         return response.json()
 
     """
@@ -51,6 +55,7 @@ class Parler:
     :param mst: master token
     :param debug: logging.info debugging messages
     """
+
     def __init__(self, jst: str, mst: str, debug: bool, config_file: string = None):
         self.jst = jst
         self.mst = mst
@@ -68,36 +73,41 @@ class Parler:
         self.reconnects = 0
         self.retry_delay = 2
         self.max_reconnects = 20
-        
+
         if config_file is not None:
             config = configparser.ConfigParser()
             config.read(config_file)
             if "connection" in config and \
-                   "retry_delay" in config["connection"] and \
-                   "max_reconnects" in config["connection"]:
+                "retry_delay" in config["connection"] and \
+                    "max_reconnects" in config["connection"]:
                 self.retry_delay = config["connection"]["retry_delay"]
                 self.max_reconnects = config["connection"]["max_reconnects"]
-        self._log.setLevel(level=logging.DEBUG if self.debug else logging.ERROR)
+        self._log.setLevel(
+            level=logging.DEBUG if self.debug else logging.ERROR)
         self._log.info("program started")
     """
     @helper response handler
     pass an http response through to check for specific codes
     """
-    def handle_response(self,response):
+
+    def handle_response(self, response):
         if self.reconnects >= self.max_reconnects:
-            raise Exception ("Internal abort; {} reconnect attemps".format(self.max_reconnects))
-        elif response.status_code >=400 and response.status_code <=428:
-            raise Exception ({"status":response.status_code,
-                              "error":response.reason,
+            raise Exception(
+                "Internal abort; {} reconnect attemps".format(self.max_reconnects))
+        elif response.status_code >= 400 and response.status_code <= 428:
+            raise Exception({"status": response.status_code,
+                             "error": response.reason,
                              "message": self.Errors.NoAuth})
 
         elif response.status_code == 502:
-            self._log.warning(f"Bad Gateway Error, retry in {self.retry_delay} seconds")
+            self._log.warning(
+                f"Bad Gateway Error, retry in {self.retry_delay} seconds")
             self.reconnects += 1
             sleep(self.retry_delay)
 
         elif response.status_code == 429:
-            self._log.warning(f"Too many requests Error, retry in {self.retry_delay} seconds")
+            self._log.warning(
+                f"Too many requests Error, retry in {self.retry_delay} seconds")
             self.reconnects += 1
             sleep(self.retry_delay)
 
@@ -105,16 +115,17 @@ class Parler:
             self.reconnects = 0
 
         return response
-    
+
     def get(self, path, **kwargs):
         return self.session.get(self.base_url + path, **kwargs)
-    
+
     def post(self, path, **kwargs):
         return self.session.post(self.base_url + path, **kwargs)
-        
+
     """
     :param username: Username to fetch
     """
+
     def profile(self, username=None) -> dict:
         response = self.get("/profile")
         if username is not None:
@@ -131,6 +142,7 @@ class Parler:
     """
     :param searchtag: Hashtag to search
     """
+
     def hashtags(self, searchtag="") -> dict:
         params = (
             ("search", searchtag),
@@ -145,16 +157,17 @@ class Parler:
     :param limit: limit
     :param cursor: string to id the next items
     """
+
     def feed(self, limit=10, cursor="") -> dict:
         params = (
             ("limit", limit),
         )
         if cursor != "":
-            params = params + (("startkey",cursor),)
+            params = params + (("startkey", cursor),)
         response = self.get("/feed",  params=params)
         if self.handle_response(response).status_code != 200:
             self._log.warning(f"Status: {response.status_code}")
-            return self.feed(limit,cursor)
+            return self.feed(limit, cursor)
         return response.json()
 
     """
@@ -163,31 +176,34 @@ class Parler:
     :param limit: limit
     :param cursor: string to id the next items
     """
+
     def created_items(self, item_type="post", username="", limit=10, cursor="") -> dict:
         params = (
             ("username", username),
             ("limit", limit)
         )
         if cursor != "":
-            params = params + (("startkey",cursor),)
-        response = self.session.get(self.base_url + "/" + item_type + "/creator",  params=params)
+            params = params + (("startkey", cursor),)
+        response = self.session.get(
+            self.base_url + "/" + item_type + "/creator",  params=params)
         if self.handle_response(response).status_code != 200:
             self._log.warning(f"Status: {response.status_code}")
             return self.created_items(item_type=item_type, username=username, limit=limit, cursor=cursor)
         return response.json()
 
-
     """
     :param item_type: type of item to delete ('post' or 'comment')
     :param id: id of item to delete
     """
+
     def delete_item(self, item_type, id):
         if item_type == 'echo':  # delete echo using post api
             item_type = 'post'
         params = (
             ("id", id),
         )
-        response = self.session.post(self.base_url + "/" + item_type + "/delete", params=params)
+        response = self.session.post(
+            self.base_url + "/" + item_type + "/delete", params=params)
         if self.handle_response(response).status_code != 200:
             self._log.warning(f"Status: {response.status_code}")
             return self.delete_item(item_type=item_type, id=id)
@@ -197,12 +213,13 @@ class Parler:
     :param limit: limit
     :param cursor: string to id the next items
     """
+
     def notifications(self, limit=10, cursor="") -> dict:
         params = (
             ("limit", limit),
         )
         if cursor != "":
-            params = params + (("startkey",cursor),)
+            params = params + (("startkey", cursor),)
         response = self.get("/notification",  params=params)
         if self.handle_response(response).status_code != 200:
             self._log.warning(f"Status: {response.status_code}")
@@ -213,12 +230,13 @@ class Parler:
     :param limit: limit
     :param cursor: string to id the next items
     """
+
     def discover_feed(self, limit=10, cursor="") -> dict:
         params = (
             ("limit", limit),
         )
         if cursor != "":
-            params = params + (("startkey",cursor),)
+            params = params + (("startkey", cursor),)
         response = self.get("/discover/posts",  params=params)
         if self.handle_response(response).status_code != 200:
             self._log.warning(f"Status: {response.status_code}")
@@ -230,24 +248,26 @@ class Parler:
     :param limit: limit
     :param cursor: string to id the next items
     """
+
     def hashtags_feed(self, tag, limit=10, cursor="") -> dict:
         params = (
             ("tag", tag),
             ("limit", limit)
         )
         if cursor != "":
-            params = params + (("startkey",cursor),)
+            params = params + (("startkey", cursor),)
         response = self.get("/post/hashtag",  params=params)
         if self.handle_response(response).status_code != 200:
             self._log.warning(f"Status: {response.status_code}")
             return self.hashtags_feed(limit, cursor)
         return response.json()
-    
+
     """
     :param creator_id: creator ID from user, NOT username!!
     :param limit: limit
     :param cursor: string to id the next items
     """
+
     def user_feed(self, creator_id, limit=10, cursor="") -> dict:
         params = (
             ('id', creator_id),
@@ -255,7 +275,7 @@ class Parler:
         )
 
         if cursor != "":
-            params = params + (("startkey",cursor),)
+            params = params + (("startkey", cursor),)
         response = self.get("/post/creator",  params=params)
         if self.handle_response(response).status_code != 200:
             self._log.warning(f"Status: {response.status_code}")
@@ -265,11 +285,15 @@ class Parler:
     """
     :param search: search term
     """
-    def users(self, searchtag="") -> dict:
+
+    def users(self, searchtag="", limit=10, cursor="") -> dict:
         params = (
             ("search", searchtag),
+            ("limit", limit),
         )
-        response = self.get(self.base_url + "/users", params=params)
+        if cursor != "":
+            params = params + (("startkey", cursor),)
+        response = self.get("/users", params=params)
         if self.handle_response(response).status_code != 200:
             self._log.warning(f"Status: {response.status_code}")
             return self.users(searchtag=searchtag)
@@ -278,6 +302,7 @@ class Parler:
     """
     :param username: username
     """
+
     def follow_user(self, username) -> dict:
         params = (
             ("username", username),
@@ -287,18 +312,22 @@ class Parler:
             'Accept': 'application/json, text/plain, */*',
             'Content-Type': 'application/json',
         }
-        response = self.post(self.base_url + "/follow", params=params, data=data, headers=headers)
+        response = self.post("/follow",
+                             params=params, data=data, headers=headers)
         if self.handle_response(response).status_code != 200:
             self._log.warning(f"Status: {response.status_code}")
             return self.follow_user(username=username)
         return response.json()
-    
-    def followers(self, creator_id) -> dict:
+
+    def followers(self, creator_id, limit=10, cursor="") -> dict:
         params = (
             ("id", creator_id),
+            ('limit', limit),
         )
-        response = self.get(self.base_url + "/followers", params=params)
+        if cursor != "":
+            params = params + (("startkey", cursor),)
+        response = self.get("/follow/followers", params=params)
         if self.handle_response(response).status_code != 200:
             self._log.warning(f"Status: {response.status_code}")
-            return self.followers(creator_id=creator_id)
+            return self.followers(creator_id=creator_id, limit=limit, cursor=cursor)
         return response.json()
