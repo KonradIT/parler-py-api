@@ -184,8 +184,7 @@ class Parler:
         )
         if cursor != "":
             params = params + (("startkey", cursor),)
-        response = self.session.get(
-            self.base_url + "/" + item_type + "/creator",  params=params)
+        response = self.get("/" + item_type + "/creator",  params=params)
         if self.handle_response(response).status_code != 200:
             self._log.warning(f"Status: {response.status_code}")
             return self.created_items(item_type=item_type, username=username, limit=limit, cursor=cursor)
@@ -202,8 +201,7 @@ class Parler:
         params = (
             ("id", id),
         )
-        response = self.session.post(
-            self.base_url + "/" + item_type + "/delete", params=params)
+        response = self.post("/" + item_type + "/delete", params=params)
         if self.handle_response(response).status_code != 200:
             self._log.warning(f"Status: {response.status_code}")
             return self.delete_item(item_type=item_type, id=id)
