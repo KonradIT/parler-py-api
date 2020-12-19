@@ -68,7 +68,7 @@ class Parler:
         self.session.headers["User-Agent"] = ua.random
 
         self._log = logging.getLogger("parler-py-api")
-
+        self._log.setLevel(level=logging.DEBUG if self.debug else logging.ERROR)
         # Default values
         self.reconnects = 0
         self.retry_delay = 2
@@ -82,9 +82,11 @@ class Parler:
                     "max_reconnects" in config["connection"]:
                 self.retry_delay = config["connection"]["retry_delay"]
                 self.max_reconnects = config["connection"]["max_reconnects"]
-        self._log.setLevel(
-            level=logging.DEBUG if self.debug else logging.ERROR)
-        self._log.info("program started")
+            if ["log_to_file"] in "config" and config["log_to_file"]["enabled"] == "true":
+                fh = logging.FileHandler(config["log_to_file"]["log_file"])
+                fh.setLevel(logging.DEBUG)
+                self._log.addHandler(fh)
+       
     """
     @helper response handler
     pass an http response through to check for specific codes
@@ -257,7 +259,7 @@ class Parler:
         response = self.get("/post/hashtag",  params=params)
         if self.handle_response(response).status_code != 200:
             self._log.warning(f"Status: {response.status_code}")
-            return self.hashtags_feed(limit, cursor)
+            return self.hashtags_feed(tag=tag, limit=limit, cursor=cursor)
         return response.json()
 
     """
@@ -294,7 +296,7 @@ class Parler:
         response = self.get("/users", params=params)
         if self.handle_response(response).status_code != 200:
             self._log.warning(f"Status: {response.status_code}")
-            return self.users(searchtag=searchtag)
+            return self.users(searchtag=searchtag, limit=limit, cursor=cursor)
         return response.json()
 
     """

@@ -70,12 +70,14 @@ def get_posts(hashtag):
         exputils.writetocsv(users, feed.users, insert_headers=True)
     with open(filename % (hashtag, str(datetime.date.today()), "links"), mode="a") as links:
         exputils.writetocsv(links, feed.links, insert_headers=True)
-    while feed.last == False:
-        time.sleep(random.randint(1, max_sleep_limit))
+    while True:
+        if feed.last:
+            logging.info("Exiting, all done.")
+            break
+        time.sleep(random.randint(max_sleep_limit/2, max_sleep_limit))
         try:
             data = parler.hashtags_feed(hashtag, 100, cursor=feed.next)
             feed = models.FeedSchema().load(data)
-            break
         except:
             traceback.print_exc()
             time.sleep(max_sleep_limit)
@@ -87,7 +89,7 @@ def get_posts(hashtag):
                 exputils.writetocsv(users, feed.users, insert_headers=False)
             with open(filename % (hashtag, str(datetime.date.today()), "links"), mode="a") as links:
                 exputils.writetocsv(links, feed.links, insert_headers=False)
-
+        
 for hashtag in hashtags:
     thr = threading.Thread(target=get_posts, args=(hashtag,))
     thr.start()
