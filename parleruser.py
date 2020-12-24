@@ -18,7 +18,7 @@ def process_item(item_type, item, expiration, delete_active):
     # print(json.dumps(item, indent=1))
     time_since = datetime.utcnow() - datetime.strptime(item.get("CreatedAt"),
                                                        "%Y%m%d%H%M%S")
-    if expiration and time_since > timedelta(days=float(expiration)):
+    if expiration is not None and time_since > timedelta(days=expiration):
         date_color = "red"
         deletion_msg = " ***DELETING*** "
         if delete_active:
@@ -111,7 +111,7 @@ if __name__ == '__main__':
         type=float)
     parser.add_argument('-D',
                         '--delete',
-                        help='delete expired posts/comments, if authorized',
+                        help='delete expired posts/comments, if authorized (otherwise dry run)',
                         action='store_true')  # false if not flagged
     parser.add_argument('users', help='Parler display name(s)', nargs='*')
     args = parser.parse_args()
