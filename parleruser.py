@@ -1,8 +1,9 @@
-"""Delete posts and comments created before expiration deadline."""
+"""Review user posts and comments, with option to delete after expiration."""
 import json
 import os
 import time
 import traceback
+import argparse
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from termcolor import colored
@@ -13,7 +14,7 @@ parler = Parler(jst=os.getenv("JST"), mst=os.getenv("MST"), debug=False)
 
 
 def process_item(item_type, item, expiration, delete_active):
-    """Delete expired item if expired, then print item report."""
+    """Print item summary, after (active or dry run) deleting expired item."""
     # print(json.dumps(item, indent=1))
     time_since = datetime.utcnow() - datetime.strptime(item.get("CreatedAt"),
                                                        "%Y%m%d%H%M%S")
@@ -46,12 +47,22 @@ def process_item(item_type, item, expiration, delete_active):
           colored(item.get("Body").replace("\n", " "), body_color))
 
 
-def user_items(username, expiration=None, delete_active=False):
+def user_items(username, item_types, expiration=None, delete_active=False):
     """Retrieve posts and comments created by username."""
-    for item_type in ['post', 'comment']:
+    if not item_types:
+        item_types = ['post', 'comment']
+    for item_type in item_types:
         data = parler.created_items(item_type, username, limit=100, cursor="")
-        if len(data[item_type + 's']) == 0:
-            break  # skip processing if no posts/comments
+        # print(json.dumps(data, indent=1))
+        item_key = item_type + 's'
+        if item_key not in data.keys() or len(data[item_key]) == 0:
+            print('*** no', item_key, 'available for', username)
+            continue  # skip processing if no posts/comments
+        print('***', item_key, 'for', username)
+        # parse comments using same schema as posts
+        if "comments" in data.keys():
+            data["posts"] = data["comments"].copy()
+            del data["comments"]
         feed = models.FeedSchema().load(data)
         count = 0
         while count < 20:
@@ -65,6 +76,10 @@ def user_items(username, expiration=None, delete_active=False):
                                             username,
                                             limit=100,
                                             cursor=more_items)
+                # parse comments using same schema as posts
+                if "comments" in data.keys():
+                    data["posts"] = data["comments"].copy()
+                    del data["comments"]
                 feed = models.FeedSchema().load(data)
                 count += 1
             except:
@@ -75,6 +90,30 @@ def user_items(username, expiration=None, delete_active=False):
 
 
 if __name__ == '__main__':
-    username = os.getenv("USERNAME")  # display name
-    expiration = os.getenv("EXPIRATION")  # days, may be fractional
-    user_items(username, expiration)
+    parser = argparse.ArgumentParser()
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('-p',
+                       '--posts',
+                       help='only include user posts',
+                       dest='item_types',
+                       action='append_const',
+                       const='post')
+    group.add_argument('-c',
+                       '--comments',
+                       help='only include user comments',
+                       dest='item_types',
+                       action='append_const',
+                       const='comment')
+    parser.add_argument(
+        '-x',
+        '--expiration',
+        help='days for user posts/comments to expire, may be fractional',
+        type=float)
+    parser.add_argument('-D',
+                        '--delete',
+                        help='delete expired posts/comments, if authorized',
+                        action='store_true')  # false if not flagged
+    parser.add_argument('users', help='Parler display name(s)', nargs='*')
+    args = parser.parse_args()
+    for user in args.users:
+        user_items(user, args.item_types, args.expiration, args.delete)
