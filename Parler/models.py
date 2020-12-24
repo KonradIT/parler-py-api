@@ -106,6 +106,11 @@ class FeedSchema(Schema):
 
     @post_load
     def make_feed(self, data, **kwargs):
+        # print(json.dumps(data, indent=1))
+        if "Comments" in data.keys():
+            data["Items"] = data["Comments"].copy()
+            del data["Comments"]
+
         return Feed(**data)
 
 class UserList():
