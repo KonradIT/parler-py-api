@@ -47,7 +47,7 @@ if __name__ == '__main__':
 		
 		count = 0
 		while count < 20:
-			try:
+			if args.summary:
 				for post in feed.items:
 					print("\t", colored(post.get("Id"), "cyan"))
 					print("\t>>> Article:", colored(post.get("Article"), "yellow"))
@@ -55,7 +55,9 @@ if __name__ == '__main__':
 					print("\t>>> Upvotes:", colored(post.get("Upvotes"), "yellow"))
 					print("\t>>> Reposts:", colored(post.get("Reposts"), "yellow"))
 					print("\t>>> Author:", colored(post.get("Creator"), "yellow"), "\n")
-
+			else:
+					print(json.dumps(feed.items, indent=4))
+			try:
 				more_posts = feed.next
 				data = parler.feed(limit=100, cursor=more_posts)
 				feed = models.FeedSchema().load(data)

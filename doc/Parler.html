@@ -8,7 +8,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>Parler</strong></big></big></font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/konrad/GitHub/parler/Parler/__init__.py">/home/konrad/GitHub/parler/Parler/__init__.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:c%3A%5Cusers%5Ckonra%5Cgithub%5Cparler-py-api%5Cparler%5C__init__.py">c:\users\konra\github\parler-py-api\parler\__init__.py</a></font></td></tr></table>
     <p></p>
 <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -17,10 +17,9 @@
 <font color="#ffffff" face="helvetica, arial"><big><strong>Package Contents</strong></big></font></td></tr>
     
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="Parler.errors.html">errors</a><br>
-</td><td width="25%" valign=top><a href="Parler.models.html">models</a><br>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="Parler.models.html">models</a><br>
 </td><td width="25%" valign=top><a href="Parler.utils.html">utils</a><br>
-</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -42,20 +41,50 @@
 <font color="#000000" face="helvetica, arial"><a name="Parler">class <strong>Parler</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#Parler">Parler</a>(jst:&nbsp;str,&nbsp;mst:&nbsp;str,&nbsp;debug:&nbsp;bool)<br>
+<td colspan=2><tt><a href="#Parler">Parler</a>(jst:&nbsp;str,&nbsp;mst:&nbsp;str,&nbsp;debug:&nbsp;bool,&nbsp;config_file:&nbsp;&amp;lt;module&nbsp;'string'&nbsp;from&nbsp;'C:\\Program&nbsp;Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.8_3.8.1776.0_x64__qbz5n2kfra8p0\\lib\\string.py'&amp;gt;&nbsp;=&nbsp;None)<br>
 &nbsp;<br>
-:param&nbsp;jst:&nbsp;short-term&nbsp;token<br>
-:param&nbsp;mst:&nbsp;master&nbsp;token<br>
-:param&nbsp;debug:&nbsp;print&nbsp;debugging&nbsp;messages<br>&nbsp;</tt></td></tr>
+<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="Parler-__init__"><strong>__init__</strong></a>(self, jst: str, mst: str, debug: bool)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+<dl><dt><a name="Parler-__init__"><strong>__init__</strong></a>(self, jst: str, mst: str, debug: bool, config_file: &lt;module 'string' from 'C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.8_3.8.1776.0_x64__qbz5n2kfra8p0\\lib\\string.py'&gt; = None)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="Parler-created_items"><strong>created_items</strong></a>(self, item_type='post', username='', limit=10, cursor='') -&gt; dict</dt></dl>
+
+<dl><dt><a name="Parler-delete_item"><strong>delete_item</strong></a>(self, item_type, id)</dt></dl>
+
+<dl><dt><a name="Parler-discover_feed"><strong>discover_feed</strong></a>(self, limit=10, cursor='') -&gt; dict</dt></dl>
 
 <dl><dt><a name="Parler-feed"><strong>feed</strong></a>(self, limit=10, cursor='') -&gt; dict</dt></dl>
 
+<dl><dt><a name="Parler-follow_user"><strong>follow_user</strong></a>(self, username) -&gt; dict</dt></dl>
+
+<dl><dt><a name="Parler-followers"><strong>followers</strong></a>(self, creator_id, limit=10, cursor='') -&gt; dict</dt></dl>
+
+<dl><dt><a name="Parler-get"><strong>get</strong></a>(self, path, **kwargs)</dt></dl>
+
+<dl><dt><a name="Parler-handle_response"><strong>handle_response</strong></a>(self, response)</dt></dl>
+
 <dl><dt><a name="Parler-hashtags"><strong>hashtags</strong></a>(self, searchtag='') -&gt; dict</dt></dl>
 
+<dl><dt><a name="Parler-hashtags_feed"><strong>hashtags_feed</strong></a>(self, tag, limit=10, cursor='') -&gt; dict</dt></dl>
+
+<dl><dt><a name="Parler-notifications"><strong>notifications</strong></a>(self, limit=10, cursor='') -&gt; dict</dt></dl>
+
+<dl><dt><a name="Parler-post"><strong>post</strong></a>(self, path, **kwargs)</dt></dl>
+
 <dl><dt><a name="Parler-profile"><strong>profile</strong></a>(self, username=None) -&gt; dict</dt></dl>
+
+<dl><dt><a name="Parler-user_feed"><strong>user_feed</strong></a>(self, creator_id, limit=10, cursor='') -&gt; dict</dt></dl>
+
+<dl><dt><a name="Parler-users"><strong>users</strong></a>(self, searchtag='', limit=10, cursor='') -&gt; dict</dt></dl>
+
+<hr>
+Static methods defined here:<br>
+<dl><dt><a name="Parler-get_chapta_image"><strong>get_chapta_image</strong></a>(key)</dt></dl>
+
+<dl><dt><a name="Parler-get_login_key"><strong>get_login_key</strong></a>(email, password)</dt></dl>
+
+<dl><dt><a name="Parler-submit_chapta"><strong>submit_chapta</strong></a>(key, solution)</dt></dl>
 
 <hr>
 Data descriptors defined here:<br>
@@ -65,12 +94,28 @@ Data descriptors defined here:<br>
 <dl><dt><strong>__weakref__</strong></dt>
 <dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
 </dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>Errors</strong> = &lt;class 'Parler.Parler.Errors'&gt;</dl>
+
 </td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-sleep"><strong>sleep</strong></a>(...)</dt><dd><tt><a href="#-sleep">sleep</a>(seconds)<br>
+&nbsp;<br>
+Delay&nbsp;execution&nbsp;for&nbsp;a&nbsp;given&nbsp;number&nbsp;of&nbsp;seconds.&nbsp;&nbsp;The&nbsp;argument&nbsp;may&nbsp;be<br>
+a&nbsp;floating&nbsp;point&nbsp;number&nbsp;for&nbsp;subsecond&nbsp;precision.</tt></dd></dl>
+</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
     
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><strong>List</strong> = typing.List</td></tr></table>
+<td width="100%"><strong>List</strong> = typing.List<br>
+<strong>ua</strong> = &lt;fake_useragent.fake.FakeUserAgent object&gt;</td></tr></table>
 </body></html>
