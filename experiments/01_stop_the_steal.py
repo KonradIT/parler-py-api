@@ -24,7 +24,7 @@ while feed.last == False:
 	time.sleep(interval)
 	# for i in feed.items:
 	# 	if i.get("Id2") == "84d168ce1cb94114a7cb3d4f17a30ae0": exit()
-	with open(filename, mode="a") as posts:
+	with open(filename, mode="a", encoding="utf-8") as posts:
 		json.dump(feed.items, posts)
 	try:
 		data = parler.hashtags_feed("stopthesteal", 100, cursor=feed.next)

@@ -16,7 +16,7 @@ interval = 5
 filename = "hashtags.json"
 if len(sys.argv) > 1:
 	filename = sys.argv[1]
-with open(filename, mode="a") as hashtags:
+with open(filename, mode="a", encoding="utf-8") as hashtags:
 	results = []
 	def ex(signal, frame):
 		print("Closing...")

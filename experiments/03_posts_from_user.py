@@ -33,13 +33,14 @@ def get_posts(username, output_dir):
             data = parler.user_feed(userdetails.get("_id"), 100, cursor="")
             feed = models.FeedSchema().load(data)
             break
-        except:
-            traceback.print_exc()
+        except Exception as e:
+            if e.__class__.__name__ == "TypeError:":
+                sys.exit()
             time.sleep(max_sleep_limit)
     
-    with open(filename % (output_dir, username, str(datetime.date.today()), "posts"), mode="a") as posts:
+    with open(filename % (output_dir, username, str(datetime.date.today()), "posts"), mode="a", encoding="utf-8") as posts:
         exputils.writetocsv(posts, feed.items, insert_headers=True)
-    with open(filename % (output_dir, username, str(datetime.date.today()), "links"), mode="a") as links:
+    with open(filename % (output_dir, username, str(datetime.date.today()), "links"), mode="a", encoding="utf-8") as links:
         exputils.writetocsv(links, feed.links, insert_headers=True)
     while True:
         logging.info("is last? %s", feed.last)
@@ -52,13 +53,15 @@ def get_posts(username, output_dir):
             data = parler.user_feed(
                 userdetails.get("_id"), 100, cursor=feed.next)
             feed = models.FeedSchema().load(data)
-        except:
+        except Exception as e:
             traceback.print_exc()
+            if e.__class__.__name__ == "TypeError:":
+                sys.exit()
             time.sleep(max_sleep_limit)
         finally:
-            with open(filename % (output_dir, username, str(datetime.date.today()), "posts"), mode="a") as posts:
+            with open(filename % (output_dir, username, str(datetime.date.today()), "posts"), mode="a", encoding="utf-8") as posts:
                 exputils.writetocsv(posts, feed.items)
-            with open(filename % (output_dir, username, str(datetime.date.today()), "links"), mode="a") as links:
+            with open(filename % (output_dir, username, str(datetime.date.today()), "links"), mode="a", encoding="utf-8") as links:
                 exputils.writetocsv(links, feed.links)
 
 

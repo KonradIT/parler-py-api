@@ -54,7 +54,6 @@ def get_posts(search_hit):
 	while True:
 		try:
 			if "@" not in search_hit:
-				
 				data = parler.hashtags_feed(search_hit, 100, cursor="")
 				feed = models.FeedSchema().load(data)
 			else:
@@ -65,11 +64,11 @@ def get_posts(search_hit):
 		except:
 			traceback.print_exc()
 			time.sleep(max_sleep_limit)
-	with open(filename % (search_hit, str(datetime.date.today()), "posts"), mode="a") as posts:
+	with open(filename % (search_hit, str(datetime.date.today()), "posts"), mode="a", encoding="utf-8") as posts:
 		exputils.writetocsv(posts, feed.items, insert_headers=True)
-	with open(filename % (search_hit, str(datetime.date.today()), "users"), mode="a") as users:
+	with open(filename % (search_hit, str(datetime.date.today()), "users"), mode="a", encoding="utf-8") as users:
 		exputils.writetocsv(users, feed.users, insert_headers=True)
-	with open(filename % (search_hit, str(datetime.date.today()), "links"), mode="a") as links:
+	with open(filename % (search_hit, str(datetime.date.today()), "links"), mode="a", encoding="utf-8") as links:
 		exputils.writetocsv(links, feed.links, insert_headers=True)
 		
 	for link in feed.links:
@@ -83,8 +82,7 @@ def get_posts(search_hit):
 			break
 		time.sleep(random.randint(max_sleep_limit/2, max_sleep_limit))
 		try:
-			if "@" in search_hit:
-				
+			if "@" not in search_hit:
 				data = parler.hashtags_feed(search_hit, 100, cursor="")
 				feed = models.FeedSchema().load(data)
 			else:
@@ -97,11 +95,11 @@ def get_posts(search_hit):
 			time.sleep(max_sleep_limit)
 		finally:
 			logging.info("Writing to file...")
-			with open(filename % (search_hit, str(datetime.date.today()), "posts"), mode="a") as posts:
+			with open(filename % (search_hit, str(datetime.date.today()), "posts"), mode="a", encoding="utf-8") as posts:
 				exputils.writetocsv(posts, feed.items, insert_headers=False)
-			with open(filename % (search_hit, str(datetime.date.today()), "users"), mode="a") as users:
+			with open(filename % (search_hit, str(datetime.date.today()), "users"), mode="a", encoding="utf-8") as users:
 				exputils.writetocsv(users, feed.users, insert_headers=False)
-			with open(filename % (search_hit, str(datetime.date.today()), "links"), mode="a") as links:
+			with open(filename % (search_hit, str(datetime.date.today()), "links"), mode="a", encoding="utf-8") as links:
 				exputils.writetocsv(links, feed.links, insert_headers=False)
 			for link in feed.links:
 				if "image-cdn.parler.com" in link.get("Long"): #hosted by parler!
