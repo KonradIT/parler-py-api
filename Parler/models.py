@@ -76,7 +76,7 @@ class LinkItem(Schema):
         postprocess = True
 
 class Feed():
-    def __init__(self, Badge, BadgeString, Last, Next, PendingFollowers, Prev, Items, Users, Links):
+    def __init__(self, Badge, BadgeString, Last, Next, PendingFollowers, Prev, Items=None, Item=None, Comments=None, Users=None, Links=None):
         self.badge = Badge
         self.badge_string = BadgeString
         self.last = Last
@@ -84,6 +84,8 @@ class Feed():
         self.pending_followers = PendingFollowers
         self.prev = Prev
         self.items = Items
+        self.item = Item
+        self.comments = Comments
         self.users = Users
         self.links = Links
 
@@ -96,8 +98,9 @@ class FeedSchema(Schema):
     Next = fields.String(data_key="next")
     PendingFollowers = fields.Int(data_key="pendingFollowers")
     Prev = fields.String(data_key="prev")
-    Items = fields.List(fields.Nested(PostItem), data_key="posts")
-    Comments = fields.List(fields.Nested(PostItem), data_key="comments")
+    Items = fields.List(fields.Nested(PostItem), data_key="posts", allow_none=True)
+    Item = fields.Nested(PostItem, data_key="post", allow_none=True)
+    Comments = fields.List(fields.Nested(PostItem), data_key="comments", allow_none=True)
     Users = fields.List(fields.Nested(UserItem), data_key="users", allow_none=True)
     Links = fields.List(fields.Nested(LinkItem), data_key="urls", allow_none=True)
 

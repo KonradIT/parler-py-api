@@ -331,3 +331,16 @@ class Parler:
             self._log.warning(f"Status: {response.status_code}")
             return self.followers(creator_id=creator_id, limit=limit, cursor=cursor)
         return response.json()
+
+    def comments(self, post_id, cursor="") -> dict:
+        params = (
+            ("id", post_id),
+            ("reverse", True),
+        )
+        if cursor != "":
+            params = params + (("startkey", cursor),)
+        response = self.get("/comment", params=params)
+        if self.handle_response(response).status_code != 200:
+            self._log.warning(f"Status: {response.status_code}")
+            return self.comments(post_id=post_id, cursor=cursor)
+        return response.json()
