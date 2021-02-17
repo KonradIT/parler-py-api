@@ -6,9 +6,11 @@ This **UNOFFICIAL** library designed to programatically fetch data from parler.c
 
 # IMPORTANT ANNOUNCEMENT:
 
-Parler.com is down, [they got dumped by their cloud host AWS](https://www.buzzfeednews.com/article/johnpaczkowski/amazon-parler-aws) and should they go online again I will update this project accordingly.
+~~Parler.com is down, [they got dumped by their cloud host AWS](https://www.buzzfeednews.com/article/johnpaczkowski/amazon-parler-aws) and should they go online again I will update this project accordingly.~~
 
 ⇙⇙⇙
+
+Parler is back up, API is the same, update your `JST` and `MST` tokens, the `_ddg` (DDoS guard related?) cookie is not needed.
 
 ## Authentication:
 
