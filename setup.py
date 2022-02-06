@@ -2,11 +2,11 @@
 
 import setuptools
 
-setuptools.setup(name='parler',
-	version='1.0',
-	description='Parler API library',
+setuptools.setup(name='parler-api',
+	version='2.0',
+	description='Parler API library - v2',
 	author='Konrad Iturbe',
-	author_email='no.emails@fake.gov',
+	author_email='mail@chernowii.com',
 	packages=setuptools.find_packages(),
 	python_requires='>=3.6',
 )

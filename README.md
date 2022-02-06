@@ -1,16 +1,22 @@
 # Parler API interface for Python
 
-![](https://i.imgur.com/CmAmSBF.jpg)
+![](https://i.imgur.com/eWJwdk2.jpg)
 
 This **UNOFFICIAL** library designed to programatically fetch data from parler.com
 
 # IMPORTANT ANNOUNCEMENT:
 
-~~Parler.com is down, [they got dumped by their cloud host AWS](https://www.buzzfeednews.com/article/johnpaczkowski/amazon-parler-aws) and should they go online again I will update this project accordingly.~~
+This library supports the new (as of 2022-02-06) Parler `open-api` / logged-in endpoints. Both logged in and guest modes are supported.
 
-⇙⇙⇙
+# To do list:
 
-Parler is back up, API is the same, update your `JST` and `MST` tokens, the `_ddg` (DDoS guard related?) cookie is not needed.
+- [ ] Implement unfinished authed functions
+- [ ] Rework experiments
+- [ ] Have a github action (several!) to archive posts, run analysises, etc..
+- [ ] Testing, testing
+- [ ] Publish to pypi
+
+# The below documentation needs to be revised to match the newer Parler API and codebase:
 
 ## Authentication:
 
