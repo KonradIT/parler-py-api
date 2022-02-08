@@ -16,35 +16,49 @@ This library supports the new (as of 2022-02-06) Parler `open-api` / logged-in e
 - [ ] Testing, testing
 - [ ] Publish to pypi
 
-# The below documentation needs to be revised to match the newer Parler API and codebase:
-
 ## Authentication:
 
-You need to create a `.parler.env` file with the following contents:
+There are two modes of using the API. **Authenticated** and **Guest**.
 
-```
-JST=<your browser JST>
-MST=<your browser MST>
-```
+Authentication is done by initializing the `Parler` class, importing `Parler.with_auth` and initializing an `AuthSession` with your credentials.
 
-Get them from Inspect element > storage
+```python
+from Parler import with_auth as authed
 
-![](https://i.imgur.com/IP2bimo.png)
+au = authed.AuthSession(debug=False)
+au.is_logged_in # ==> False
+au.login(
+	identifier=os.getenv("email"),
+	password=os.getenv("password")
+)
 
-## Usage for `parlerctl`:
-
-Can show hashtags, feed
-
-```
-usage: parlerctl.py [-h] --show SHOW [--summary]
-parlerctl.py: error: the following arguments are required: --show
+au.is_logged_in # ==> True
 ```
 
--   profile
--   hashtags
--   ingest
+Here is a chart of how the functions are "loginwalled" or not.
+
+| Function           | Description                                                                            | API Type needed |
+|--------------------|----------------------------------------------------------------------------------------|-----------------|
+| `.profile()`       | Get information from a specified username                                              | Guest           |
+| `.discover_feed()` | Get discovery feed from initial page (kinda like suggested posts for first time users) | Guest           |
+| `.user_feed()`     | Get Parleys and echoes from a specified username                                       | Guest           |
+| `.trending()`      | Get trending posts (today / top)                                                       | Guest           |
+| `.feed()`          | Get feed                                                                               | Authenticated   |
+| `.users()`         | Search for users                                                                       | Authenticated   |
+| `.hashtags()`      | Search for hashtags                                                                    | Authenticated   |
+| `.following()`     | Get following profiles from specified username                                         | Authenticated   |
+| `.comments()`      | Get comments from a specified post ID                                                  | Authenticated   |
+| `.follow_user()`   | Follow a specified username                                                            | Authenticated   |
 
 ## Installation
+
+#### From pypi:
+
+```
+pip install parler-api
+```
+
+#### Clone and run locally:
 
 If using `pipenv`:
 
