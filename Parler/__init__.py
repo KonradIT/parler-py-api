@@ -30,10 +30,10 @@ class Parler:
     def __init__(self, debug: bool = False, config_file: string = None):
         self.__debug = debug
         self.__base_url = "https://parler.com/"
-        self.__session = requests.Session()
+        self.session = requests.Session()
 
-        self.__session.get(self.__base_url)
-        self.__session.headers["User-Agent"] = ua.random
+        self.session.get(self.__base_url)
+        self.session.headers["User-Agent"] = ua.random
 
         self.__log = logging.getLogger("parler-py-api")
         self.__log.setLevel(level=logging.DEBUG if self.__debug else logging.ERROR)
@@ -96,10 +96,10 @@ class Parler:
         return response
 
     def get(self, path, **kwargs):
-        return self.__session.get(self.__base_url + path, **kwargs)
+        return self.session.get(self.__base_url + path, **kwargs)
 
     def post(self, path, **kwargs):
-        return self.__session.post(self.__base_url + path, **kwargs)
+        return self.session.post(self.__base_url + path, **kwargs)
 
     """
     :param username: Username to fetch
