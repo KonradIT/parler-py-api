@@ -9,7 +9,8 @@ from logging.handlers import SocketHandler
 
 from fake_useragent import UserAgent
 import configparser
-
+import pipdate
+from version import version
 ua = UserAgent()
 
 
@@ -28,6 +29,12 @@ class Parler:
     """
 
     def __init__(self, debug: bool = False, config_file: string = None):
+        
+        # Update check
+        p = pipdate.check("parler-api", version)
+        if p is not None:
+            print(p)
+
         self.__debug = debug
         self.__base_url = "https://parler.com/"
         self.session = requests.Session()
@@ -143,7 +150,7 @@ class Parler:
     :param username: username
     """
 
-    def user_feed(self, cursor: int = 1, username: str = "") -> dict:
+    def user_feed(self, username: str = "", cursor: int = 1) -> dict:
         files = {"user": (None, username), "page": cursor}
         response = self.post("open-api/profile-feed.php", files=files)
         if self.handle_response(response).status_code != 200:
@@ -161,4 +168,12 @@ class Parler:
         if self.handle_response(response).status_code != 200:
             self.__log.warning(f"Status: {response.status_code}")
             return self.trending(tab=tab)
+        return response.json()
+
+    def post_info(self, uuid: str = "") -> dict:
+        files={"uuid": (None, uuid)}
+        response = self.post("open-api/parley.php", files=files)
+        if self.handle_response(response).status_code != 200:
+            self.__log.warning(f"Status: {response.status_code}")
+            return self.post_info(uuid=uuid)
         return response.json()

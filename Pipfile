@@ -12,6 +12,7 @@ termcolor = "*"
 marshmallow = "*"
 fake-useragent = "*"
 fire = "*"
+pipdate = "*"
 
 [requires]
 python_version = "3.8"

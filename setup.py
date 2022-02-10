@@ -2,12 +2,12 @@
 
 import setuptools
 import pathlib
-
+from version import version
 pwd = pathlib.Path(__file__).parent
 description = (pwd / "README.md").read_text()
 
 setuptools.setup(name="parler-api",
-	version="2.0",
+	version=version,
 	description="Parler API library - v2",
 	long_description=description,
     long_description_content_type="text/markdown",
