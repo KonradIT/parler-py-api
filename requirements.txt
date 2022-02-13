@@ -4,3 +4,4 @@ termcolor
 marshmallow
 pipdate
 pytest
+fake-useragent
