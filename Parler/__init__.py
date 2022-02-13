@@ -140,21 +140,12 @@ class Parler:
         return response.json()
 
     """
-    :param tag: hashtag to get feed from
-    :param limit: limit
-    :param cursor: string to id the next items
-    """
-
-    def hashtags_feed(self, tag, limit=10, cursor="") -> dict:
-        raise self.NotSupportedException
-
-    """
     :param cursor: cursor
     :param username: username
     """
 
     def user_feed(self, username: str = "", cursor: int = 1) -> dict:
-        files = {"user": (None, username), "page": cursor}
+        files = {"user": (None, username), "page": (None, str(cursor))}
         response = self.post("open-api/profile-feed.php", files=files)
         if self.handle_response(response).status_code != 200:
             self.__log.warning(f"Status: {response.status_code}")

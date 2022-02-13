@@ -89,6 +89,19 @@ class AuthSession(Parler):
         return response.json()
 
     """
+    :param tag: hashtag to get feed from
+    """
+
+    def hashtags_feed(self, tag) -> dict:
+        files = {"tag": (None, tag), }
+        response = self.post("pages/hashtags.php", files=files)
+        if self.handle_response(response).status_code != 200:
+            self.__log.warning(f"Status: {response.status_code}")
+            return self.hashtags_feed(tag=tag)
+        return response.json()
+
+    
+    """
     :param username: username
     :param cursor: cursor
     """

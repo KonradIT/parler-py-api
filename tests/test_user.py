@@ -25,7 +25,7 @@ def test_get_profile():
     assert r is not None
     assert "username" in r
     assert "dateCreated" in r
-    assert "uuid" in r and r.get("uuid") == "40f28d1a-ee94-4d6f-ad9a-ed4cd3a39228"
+    assert "uuid" in r and r.get("uuid") == "40f28d1a-ee94-4d6f-ad9a-ed4cd3a39228" # https://web.archive.org/web/20220213155807/https://parler.com/open-api/parley.php
     assert "bio" in r
     assert "website" in r
     assert "location" in r
@@ -52,8 +52,8 @@ def test_get_profile_feed_pagination():
     assert len(r2.get("data").get("posts")) == posts_per_user
     assert len(r3.get("data").get("posts")) == posts_per_user
 
-    assert r1.get("data").get("posts") is not r2.get("data").get("posts")
-    assert r2.get("data").get("posts") is not r3.get("data").get("posts")
+    assert r1.get("data").get("posts") != r2.get("data").get("posts")
+    assert r2.get("data").get("posts") != r3.get("data").get("posts")
 
     # deep dive: get IDs of each post in user feed, sort alphabetically, compare against n+1
 
@@ -64,8 +64,9 @@ def test_get_profile_feed_pagination():
     fp1.sort()
     fp2.sort()
     fp3.sort()
-    assert fp1 is not fp2
-    assert fp2 is not fp3
+    
+    assert fp1 != fp2
+    assert fp2 != fp3
 
 
 def test_login():
