@@ -1,5 +1,7 @@
 name: CI
 on: [push, pull_request] # Test every push and every PR
+env:
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 jobs:
   test:
     runs-on: ubuntu-latest
