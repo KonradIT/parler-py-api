@@ -1,1 +1,31 @@
+name: Deploy to PyPI
+on:
+  release:
+    types: [published]
 
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo content
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2.0.0
+        with:
+          python-version: "3.7"
+
+      - name: Install requirements
+        run: pip install -r requirements.txt
+
+      - name: Install build dependencies
+        run: pip install wheel
+
+      - name: Build package
+        run: python setup.py sdist bdist_wheel
+
+      - name: Publish a Python distribution to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
