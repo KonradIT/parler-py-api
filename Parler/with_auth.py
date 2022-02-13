@@ -3,11 +3,13 @@ from Parler import Parler
 import json
 from Parler.utils import check_login
 
+
 class AuthSession(Parler):
 
     """
     Functions for logging in - which require initialization
     """
+
     class NotLoggedIn(Exception):
         pass
 
@@ -23,11 +25,11 @@ class AuthSession(Parler):
             self.__log.warning(f"Status: {response.status_code}")
             return self.login(identifier=identifier, password=password)
         return response.json()
-    
+
     @property
     def is_logged_in(self):
         return self.session.cookies.get("parler_auth_token") is not None and not ""
-    
+
     """
     Functions that require authentication but are non-signed-user facing
     """
@@ -37,6 +39,7 @@ class AuthSession(Parler):
     :param cursor: id to the next items
     :param subscriptions_only: subscriptions only
     """
+
     @check_login
     def feed(
         self,
@@ -62,6 +65,7 @@ class AuthSession(Parler):
     """
     :param searchtag: search term
     """
+
     @check_login
     def users(self, searchtag: str = "") -> dict:
         files = {"s": (None, searchtag), "type": (None, "user")}
@@ -88,14 +92,16 @@ class AuthSession(Parler):
     :param username: username
     :param cursor: cursor
     """
+
     @check_login
     def followers(self, creator_id, limit=10, cursor="") -> dict:
         raise self.NotSupportedException
-    
+
     """
     :param username: username
     :param cursor: cursor
     """
+
     @check_login
     def following(self, username: str = "", cursor: int = 1) -> dict:
         files = {
@@ -112,6 +118,7 @@ class AuthSession(Parler):
     :param post_id: post id
     :param cursor: cursor
     """
+
     @check_login
     def comments(self, post_id: str = "", cursor: int = 0) -> dict:
         params = (
@@ -127,18 +134,19 @@ class AuthSession(Parler):
     """
     Functions that require authentication for interfacing with the current signed in user
     """
-    
+
     def __user_interactions_helper(self, params: dict = {}) -> dict:
-        
+
         response = self.get("functions/user_interactions.php", params=params)
         if self.handle_response(response).status_code != 200:
             self.__log.warning(f"Status: {response.status_code}")
             return self.__user_interactions_helper(params=params)
         return response.json()
-    
+
     """
     :param username: username
     """
+
     @check_login
     def follow_user(self, username) -> dict:
         params = (
@@ -153,6 +161,7 @@ class AuthSession(Parler):
     :param limit: limit
     :param cursor: string to id the next items
     """
+
     @check_login
     def created_items(self, item_type="post", username="", limit=10, cursor="") -> dict:
         return self.UnimplementedException
@@ -161,7 +170,7 @@ class AuthSession(Parler):
     :param item_type: type of item to delete ("post" or "comment")
     :param id: id of item to delete
     """
-    
+
     @check_login
     def delete_item(self, item_type, id):
         return self.UnimplementedException
@@ -170,7 +179,7 @@ class AuthSession(Parler):
     :param limit: limit
     :param cursor: string to id the next items
     """
-    
+
     @check_login
     def notifications(self, limit=10, cursor="") -> dict:
         return self.UnimplementedException

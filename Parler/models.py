@@ -21,8 +21,10 @@ class UserItem(Schema):
     VerifiedComments = fields.Bool(data_key="verifiedComments", default="", missing="")
     Score = fields.Str(data_key="score", default="", missing="")
     Interactions = fields.Int(data_key="interactions", default="", missing="")
+
     class Meta:
         unknown = EXCLUDE
+
 
 class PostItem(Schema):
     Id = fields.String(data_key="_id", default="", missing="")
@@ -41,10 +43,10 @@ class PostItem(Schema):
     Depth = fields.String(data_key="depth", default="", missing="")
     DepthRaw = fields.Int(data_key="depthRaw", default="", missing="")
     Downvotes = fields.String(data_key="downvotes", default="", missing="")
-    Hashtags = fields.List(fields.String(),   data_key="hashtags", default="", missing="")
+    Hashtags = fields.List(fields.String(), data_key="hashtags", default="", missing="")
     Impressions = fields.String(data_key="impressions", default="", missing="")
     IsPrimary = fields.Bool(data_key="isPrimary", default="", missing="")
-    Links = fields.List(fields.String(),   data_key="links", default="", missing="")
+    Links = fields.List(fields.String(), data_key="links", default="", missing="")
     Post = fields.String(data_key="post", default="", missing="")
     Preview = fields.String(data_key="preview", default="", missing="")
     ReplyingTo = fields.String(data_key="replyingTo", default="", missing="")
@@ -59,8 +61,11 @@ class PostItem(Schema):
     Sensitive = fields.Bool(data_key="sensitive", default="", missing="")
     Root = fields.String(data_key="root", default="", missing="")
     Voted = fields.String(data_key="voted", default="", missing="")
+
     class Meta:
-            unknown = EXCLUDE
+        unknown = EXCLUDE
+
+
 class LinkItem(Schema):
     Id = fields.String(data_key="_id")
     CreatedAt = fields.String(data_key="createdAt")
@@ -70,13 +75,28 @@ class LinkItem(Schema):
     Modified = fields.String(data_key="modified")
     Short = fields.String(data_key="short")
     State = fields.String(data_key="state")
+
     class Meta:
         strict = True
         unknown = INCLUDE
         postprocess = True
 
-class Feed():
-    def __init__(self, Badge, BadgeString, Last, Next, PendingFollowers, Prev, Items=None, Item=None, Comments=None, Users=None, Links=None):
+
+class Feed:
+    def __init__(
+        self,
+        Badge,
+        BadgeString,
+        Last,
+        Next,
+        PendingFollowers,
+        Prev,
+        Items=None,
+        Item=None,
+        Comments=None,
+        Users=None,
+        Links=None,
+    ):
         self.badge = Badge
         self.badge_string = BadgeString
         self.last = Last
@@ -92,15 +112,18 @@ class Feed():
 
 class FeedSchema(Schema):
     """For newsfeed, user posts, or user comments."""
-    Badge = fields.Int(data_key="badge" )
-    BadgeString = fields.String(data_key="badgeString" )
+
+    Badge = fields.Int(data_key="badge")
+    BadgeString = fields.String(data_key="badgeString")
     Last = fields.Bool(data_key="last")
     Next = fields.String(data_key="next")
     PendingFollowers = fields.Int(data_key="pendingFollowers")
     Prev = fields.String(data_key="prev")
     Items = fields.List(fields.Nested(PostItem), data_key="posts", allow_none=True)
     Item = fields.Nested(PostItem, data_key="post", allow_none=True)
-    Comments = fields.List(fields.Nested(PostItem), data_key="comments", allow_none=True)
+    Comments = fields.List(
+        fields.Nested(PostItem), data_key="comments", allow_none=True
+    )
     Users = fields.List(fields.Nested(UserItem), data_key="users", allow_none=True)
     Links = fields.List(fields.Nested(LinkItem), data_key="urls", allow_none=True)
 
@@ -111,12 +134,14 @@ class FeedSchema(Schema):
     def make_feed(self, data, **kwargs):
         return Feed(**data)
 
-class UserList():
-    def __init__(self,Users, Last, Next, Prev):
+
+class UserList:
+    def __init__(self, Users, Last, Next, Prev):
         self.users = Users
         self.last = Last
         self.next = Next
         self.prev = Prev
+
 
 class UserListSchema(Schema):
     Users = fields.List(fields.Nested(UserItem), data_key="users")

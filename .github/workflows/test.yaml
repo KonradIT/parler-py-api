@@ -1,0 +1,20 @@
+name: CI
+on: [push, pull_request] # Test every push and every PR
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo content
+        uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2.0.0
+        with:
+          python-version: "3.7"
+      - name: Install requirements
+        run: pip install -r requirements.txt
+      - name: Test with pytest
+        env:
+          PARLER_USERNAME: ${{ secrets.ParlerUsername }}
+          PARLER_PASSWORD: ${{ secrets.ParlerPassword }}
+        run: PARLER_USERNAME="$PARLER_USERNAME" PARLER_PASSWORD="$PARLER_PASSWORD" pytest

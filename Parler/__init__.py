@@ -11,6 +11,7 @@ from fake_useragent import UserAgent
 import configparser
 import pipdate
 from version import version
+
 ua = UserAgent()
 
 
@@ -29,7 +30,7 @@ class Parler:
     """
 
     def __init__(self, debug: bool = False, config_file: string = None):
-        
+
         # Update check
         p = pipdate.check("parler-api", version)
         if p is not None:
@@ -86,7 +87,9 @@ class Parler:
             )
 
         elif response.status_code == 502:
-            self.__log.warning(f"Bad Gateway Error, retry in {self.__retry_delay} seconds")
+            self.__log.warning(
+                f"Bad Gateway Error, retry in {self.__retry_delay} seconds"
+            )
             self.__reconnects += 1
             sleep(self.__retry_delay)
 
@@ -171,7 +174,7 @@ class Parler:
         return response.json()
 
     def post_info(self, uuid: str = "") -> dict:
-        files={"uuid": (None, uuid)}
+        files = {"uuid": (None, uuid)}
         response = self.post("open-api/parley.php", files=files)
         if self.handle_response(response).status_code != 200:
             self.__log.warning(f"Status: {response.status_code}")

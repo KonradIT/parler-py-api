@@ -2,3 +2,5 @@ requests
 python-dotenv
 termcolor
 marshmallow
+pipdate
+pytest

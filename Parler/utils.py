@@ -6,9 +6,11 @@ def add_missing_values(row):
         row["Domain"] = "parler.com"
     return row
 
+
 def check_login(func):
     def wrapper(*args):
         if not args[0].is_logged_in:
             raise with_auth.AuthSession.NotLoggedIn
         return func(*args)
+
     return wrapper
