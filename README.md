@@ -10,11 +10,11 @@ This library supports the new (as of 2022-02-06) Parler `open-api` / logged-in e
 
 # To do list:
 
-- [ ] Implement unfinished authed functions
+- [X] Implement unfinished authed functions
 - [ ] Rework experiments
 - [ ] Have a github action (several!) to archive posts, run analysises, etc..
 - [ ] Testing, testing
-- [ ] Publish to pypi
+- [X] Publish to pypi
 
 ## Authentication:
 
