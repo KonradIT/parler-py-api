@@ -3,6 +3,9 @@ on:
   release:
     types: [published]
 
+env:
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
