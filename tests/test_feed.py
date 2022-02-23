@@ -7,6 +7,7 @@ au = authed.AuthSession(debug=False)
 
 posts_per_feed_page = 24
 
+
 def test_get_feed():
     assert os.getenv("PARLER_USERNAME") is not None
     assert os.getenv("PARLER_PASSWORD") is not None
@@ -31,6 +32,6 @@ def test_get_feed():
     fp1.sort()
     fp2.sort()
     fp3.sort()
-    
+
     assert fp1 != fp2
     assert fp2 != fp3

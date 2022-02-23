@@ -92,15 +92,17 @@ class AuthSession(Parler):
     :param tag: hashtag to get feed from
     """
 
+    @check_login
     def hashtags_feed(self, tag) -> dict:
-        files = {"tag": (None, tag), }
+        files = {
+            "tag": (None, tag),
+        }
         response = self.post("pages/hashtags.php", files=files)
         if self.handle_response(response).status_code != 200:
             self.__log.warning(f"Status: {response.status_code}")
             return self.hashtags_feed(tag=tag)
         return response.json()
 
-    
     """
     :param username: username
     :param cursor: cursor
@@ -114,6 +116,14 @@ class AuthSession(Parler):
     :param username: username
     :param cursor: cursor
     """
+
+    @check_login
+    def trending_users(self):
+        response = self.post("functions/trending_users.php")
+        if self.handle_response(response).status_code != 200:
+            self.__log.warning(f"Status: {response.status_code}")
+            return self.trending_users()
+        return response.json()
 
     @check_login
     def following(self, username: str = "", cursor: int = 1) -> dict:
@@ -165,6 +175,14 @@ class AuthSession(Parler):
         params = (
             ("user", username),
             ("action", "follow"),
+        )
+        return self.__user_interactions_helper(params=params)
+
+    @check_login
+    def unfollow_user(self, username) -> dict:
+        params = (
+            ("user", username),
+            ("action", "unfollow"),
         )
         return self.__user_interactions_helper(params=params)
 

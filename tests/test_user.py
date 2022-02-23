@@ -25,7 +25,9 @@ def test_get_profile():
     assert r is not None
     assert "username" in r
     assert "dateCreated" in r
-    assert "uuid" in r and r.get("uuid") == "40f28d1a-ee94-4d6f-ad9a-ed4cd3a39228" # https://web.archive.org/web/20220213155807/https://parler.com/open-api/parley.php
+    assert (
+        "uuid" in r and r.get("uuid") == "40f28d1a-ee94-4d6f-ad9a-ed4cd3a39228"
+    )  # https://web.archive.org/web/20220213155807/https://parler.com/open-api/parley.php
     assert "bio" in r
     assert "website" in r
     assert "location" in r
@@ -64,7 +66,7 @@ def test_get_profile_feed_pagination():
     fp1.sort()
     fp2.sort()
     fp3.sort()
-    
+
     assert fp1 != fp2
     assert fp2 != fp3
 
