@@ -21,8 +21,8 @@ def test_get_feed():
     r3 = au.feed(False, 3, False)["data"]
 
     assert len(r1) == posts_per_feed_page
-    assert len(r2) == posts_per_feed_page
-    assert len(r3) == posts_per_feed_page
+    assert len(r2) == posts_per_feed_page-2
+    assert len(r3) == posts_per_feed_page-2
 
     # deep dive: get IDs of each post in user feed, sort alphabetically, compare against n+1
 
