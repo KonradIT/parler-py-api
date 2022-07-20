@@ -1,7 +1,6 @@
 import Parler
 from Parler import with_auth as authed
 import os
-from pprint import pprint
 
 p = Parler.Parler(debug=True)
 au = authed.AuthSession(debug=False)
