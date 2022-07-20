@@ -5,7 +5,7 @@ import os
 p = Parler.Parler(debug=True)
 au = authed.AuthSession(debug=False)
 
-posts_per_feed_page = 20
+posts_per_feed_page = 22
 trending_length = 8
 trending_user_length = 6
 
