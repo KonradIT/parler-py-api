@@ -10,7 +10,7 @@ from logging.handlers import SocketHandler
 from fake_useragent import UserAgent
 import configparser
 import pipdate
-from version import version
+from Parler.version import version
 
 ua = UserAgent()
 
@@ -45,6 +45,7 @@ class Parler:
 
         self.__log = logging.getLogger("parler-py-api")
         self.__log.setLevel(level=logging.DEBUG if self.__debug else logging.ERROR)
+        self.__log.debug(f"User-Agent: {self.session.headers['User-Agent']}")
         # Default values
         self.__reconnects = 0
         self.__retry_delay = 2
@@ -119,7 +120,7 @@ class Parler:
         files = {
             "user": (None, username),
         }
-        response = self.post("pages/profile/view.php", files=files)
+        response = self.post("api/profile_view.php", files=files)
         if self.handle_response(response).status_code != 200:
             self.__log.warning(f"Status: {response.status_code}")
             return self.profile(username=username)
@@ -133,7 +134,7 @@ class Parler:
     def discover_feed(self, limit: int = None, cursor: str = None) -> dict:
         if limit or cursor:
             self.__log.warning("Deprecated parameters: limit, warn")
-        response = self.get("open-api/discover.php")
+        response = self.get("open-api/DiscoverEndpoint.php")
         if self.handle_response(response).status_code != 200:
             self.__log.warning(f"Status: {response.status_code}")
             return self.discover_feed(limit, cursor)
@@ -146,7 +147,7 @@ class Parler:
 
     def user_feed(self, username: str = "", cursor: int = 1) -> dict:
         files = {"user": (None, username), "page": (None, str(cursor))}
-        response = self.post("open-api/profile-feed.php", files=files)
+        response = self.post("open-api/ProfileFeedEndpoint.php", files=files)
         if self.handle_response(response).status_code != 200:
             self.__log.warning(f"Status: {response.status_code}")
             return self.user_feed(cursor=cursor, username=username)
@@ -166,7 +167,7 @@ class Parler:
 
     def post_info(self, uuid: str = "") -> dict:
         files = {"uuid": (None, uuid)}
-        response = self.post("open-api/parley.php", files=files)
+        response = self.post("open-api/ParleyDetailEndpoint.php", files=files)
         if self.handle_response(response).status_code != 200:
             self.__log.warning(f"Status: {response.status_code}")
             return self.post_info(uuid=uuid)

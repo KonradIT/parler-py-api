@@ -21,7 +21,7 @@ badge_types = [
 
 
 def test_get_profile():
-    r = p.profile("TheWesternJournal")
+    r = p.profile("TheWesternJournal").get("data")
     assert r is not None
     assert "username" in r
     assert "dateCreated" in r
@@ -36,13 +36,13 @@ def test_get_profile():
 
 def test_get_profile_feed():
     r = p.user_feed(username="TheWesternJournal")
-    assert len(r.get("data").get("posts")) == posts_per_user  # posts per user
-    assert "id" in r.get("data").get("posts")[0].get("primary")
-    assert "uuid" in r.get("data").get("posts")[0].get("primary")
-    assert "body" in r.get("data").get("posts")[0].get("primary")
-    assert "full_body" in r.get("data").get("posts")[0].get("primary")
-    assert "image" in r.get("data").get("posts")[0].get("primary")
-    assert "domain_name" in r.get("data").get("posts")[0].get("primary")
+    assert len(r.get("data")) == posts_per_user  # posts per user
+    assert "id" in r.get("data")[0].get("primary")
+    assert "uuid" in r.get("data")[0].get("primary")
+    assert "body" in r.get("data")[0].get("primary")
+    assert "full_body" in r.get("data")[0].get("primary")
+    assert "image" in r.get("data")[0].get("primary")
+    assert "domain_name" in r.get("data")[0].get("primary")
 
 
 def test_get_profile_feed_pagination():
@@ -50,18 +50,18 @@ def test_get_profile_feed_pagination():
     r2 = p.user_feed(username="TheWesternJournal", cursor=2)
     r3 = p.user_feed(username="TheWesternJournal", cursor=3)
 
-    assert len(r1.get("data").get("posts")) == posts_per_user
-    assert len(r2.get("data").get("posts")) == posts_per_user
-    assert len(r3.get("data").get("posts")) == posts_per_user
+    assert len(r1.get("data")) == posts_per_user
+    assert len(r2.get("data")) == posts_per_user
+    assert len(r3.get("data")) == posts_per_user
 
-    assert r1.get("data").get("posts") != r2.get("data").get("posts")
-    assert r2.get("data").get("posts") != r3.get("data").get("posts")
+    assert r1.get("data") != r2.get("data")
+    assert r2.get("data") != r3.get("data")
 
     # deep dive: get IDs of each post in user feed, sort alphabetically, compare against n+1
 
-    fp1 = [x.get("primary").get("uuid") for x in r1.get("data").get("posts")]
-    fp2 = [x.get("primary").get("uuid") for x in r2.get("data").get("posts")]
-    fp3 = [x.get("primary").get("uuid") for x in r3.get("data").get("posts")]
+    fp1 = [x.get("primary").get("uuid") for x in r1.get("data")]
+    fp2 = [x.get("primary").get("uuid") for x in r2.get("data")]
+    fp3 = [x.get("primary").get("uuid") for x in r3.get("data")]
 
     fp1.sort()
     fp2.sort()

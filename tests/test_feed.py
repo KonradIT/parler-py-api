@@ -1,12 +1,14 @@
 import Parler
 from Parler import with_auth as authed
 import os
+from pprint import pprint
 
 p = Parler.Parler(debug=True)
 au = authed.AuthSession(debug=False)
 
-posts_per_feed_page = 24
-
+posts_per_feed_page = 20
+trending_length = 8
+trending_user_length = 6
 
 def test_get_feed():
     assert os.getenv("PARLER_USERNAME") is not None
@@ -15,9 +17,9 @@ def test_get_feed():
         identifier=os.getenv("PARLER_USERNAME"), password=os.getenv("PARLER_PASSWORD")
     )
     assert au.is_logged_in
-    r1 = au.feed()
-    r2 = au.feed(False, 2, False)
-    r3 = au.feed(False, 3, False)
+    r1 = au.feed()["data"]
+    r2 = au.feed(False, 2, False)["data"]
+    r3 = au.feed(False, 3, False)["data"]
 
     assert len(r1) == posts_per_feed_page
     assert len(r2) == posts_per_feed_page
@@ -35,3 +37,20 @@ def test_get_feed():
 
     assert fp1 != fp2
     assert fp2 != fp3
+
+def test_trending():
+    assert len(p.trending("today")["data"]) == trending_length
+    assert len(p.trending("top")["data"]) == trending_length
+
+def test_discover_feed():
+    r = p.discover_feed()
+    assert len(r["data"]) >= posts_per_feed_page
+
+def test_trending_users():
+    assert os.getenv("PARLER_USERNAME") is not None
+    assert os.getenv("PARLER_PASSWORD") is not None
+    au.login(
+        identifier=os.getenv("PARLER_USERNAME"), password=os.getenv("PARLER_PASSWORD")
+    )
+    assert au.is_logged_in
+    assert len(au.trending_users()) == trending_user_length

@@ -1,6 +1,7 @@
 from re import sub
 from Parler import Parler
 import json
+import string
 from Parler.utils import check_login
 
 
@@ -9,6 +10,10 @@ class AuthSession(Parler):
     """
     Functions for logging in - which require initialization
     """
+
+    def __init__(self, debug: bool = False, config_file: string = None):
+        super().__init__(debug, config_file)
+        self.__log = self._Parler__log
 
     class NotLoggedIn(Exception):
         pass
@@ -24,11 +29,12 @@ class AuthSession(Parler):
         if self.handle_response(response).status_code != 200:
             self.__log.warning(f"Status: {response.status_code}")
             return self.login(identifier=identifier, password=password)
+        self.__log.debug("Logged in")
         return response.json()
 
     @property
     def is_logged_in(self):
-        return self.session.cookies.get("parler_auth_token") is not None and not ""
+        return self.session.cookies.get("parler_auth_token") not in [None, ""]
 
     """
     Functions that require authentication but are non-signed-user facing
@@ -52,7 +58,7 @@ class AuthSession(Parler):
             "hide_echoes": (None, hide_echoes),
             "subscriptions_only": (None, subscriptions_only),
         }
-        response = self.post("pages/feed.php", files=files)
+        response = self.post("api/MainFeedEndpoint.php", files=files)
         if self.handle_response(response).status_code != 200:
             self.__log.warning(f"Status: {response.status_code}")
             return self.feed(
