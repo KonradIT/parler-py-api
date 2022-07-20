@@ -2,7 +2,7 @@
 
 import setuptools
 import pathlib
-from version import version
+from Parler.version import version
 
 pwd = pathlib.Path(__file__).parent
 description = (pwd / "README.md").read_text()
