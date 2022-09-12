@@ -2,10 +2,13 @@
 
 import setuptools
 import pathlib
-from Parler.version import version
+version = open("Parler/version.py").read().split('"')[1]
 
 pwd = pathlib.Path(__file__).parent
 description = (pwd / "README.md").read_text()
+
+with open('requirements.txt') as f:
+    requirements = f.read().splitlines()
 
 setuptools.setup(
     name="parler-api",
@@ -18,5 +21,5 @@ setuptools.setup(
     author_email="mail@chernowii.com",
     packages=setuptools.find_packages(),
     python_requires=">=3.6",
-    install_requires=["requests", "marshmallow"],
+    install_requires=requirements,
 )
