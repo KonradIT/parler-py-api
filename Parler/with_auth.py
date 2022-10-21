@@ -18,16 +18,17 @@ class AuthSession(Parler):
             "access_token": "",
             "refresh_token": ""
         }
+
     class NotLoggedIn(Exception):
         pass
-    
+
     def login(self, identifier: str, password: str) -> dict:
 
         data = (
             {"identifier": identifier, "password": password}
         )
         response = self.post("v0/login", json=data)
-        
+
         if self.handle_response(response).status_code != 200:
             self.__log.warning(f"Status: {response.status_code}")
             return self.login(identifier=identifier, password=password)
@@ -35,8 +36,9 @@ class AuthSession(Parler):
         received = response.json()
         self.__credentials["access_token"] = received["access_token"]
         self.__credentials["refresh_token"] = received["refresh_token"]
-        
-        self.session.headers["Authorization"] = "Bearer " + received["access_token"]
+
+        self.session.headers["Authorization"] = "Bearer " + \
+            received["access_token"]
         return response.json()
 
     @property
@@ -63,10 +65,11 @@ class AuthSession(Parler):
         subscriptions_only: bool = False,
         limit: int = 10
     ) -> Optional[dict]:
-       
+
         if hide_echoes or subscriptions_only:
-            raise self.OldParameterException("%s no longer supported in newer Parler API." % ("hide_echoes" if hide_echoes else ("subscriptions_only" if subscriptions_only else "")))
-        
+            raise self.OldParameterException("%s no longer supported in newer Parler API." % (
+                "hide_echoes" if hide_echoes else ("subscriptions_only" if subscriptions_only else "")))
+
         params = (
             ("page", cursor),
             ("limit", limit),
@@ -87,8 +90,8 @@ class AuthSession(Parler):
     @check_login
     def users(self, searchtag: str = "", cursor: int = 1, limit: int = 10) -> dict:
         params = (
-                    ("page", cursor),
-                    ("limit", limit),
+            ("page", cursor),
+            ("limit", limit),
         )
         response = self.get("v0/search/user/%s" % searchtag, params=params)
         if self.handle_response(response).status_code != 200:
@@ -103,8 +106,8 @@ class AuthSession(Parler):
     @check_login
     def hashtags(self, searchtag="", cursor: int = 1, limit: int = 10) -> dict:
         params = (
-                    ("page", cursor),
-                    ("limit", limit),
+            ("page", cursor),
+            ("limit", limit),
         )
         response = self.get("v0/search/hashtag/%s" % searchtag, params=params)
         if self.handle_response(response).status_code != 200:
@@ -144,8 +147,8 @@ class AuthSession(Parler):
     @check_login
     def following(self, username: str = "", cursor: int = 1,  limit: int = 20) -> dict:
         params = (
-                    ("page", cursor),
-                    ("limit", limit),
+            ("page", cursor),
+            ("limit", limit),
         )
         response = self.get("v0/user/%s/following" % username, params=params)
         if self.handle_response(response).status_code != 200:
@@ -165,7 +168,8 @@ class AuthSession(Parler):
             ("limit", limit),
             ("timestamp", timestamp),
         )
-        response = self.get("v0/parleys/%s/comments_before/" % post_id, params=params)
+        response = self.get("v0/parleys/%s/comments_before/" %
+                            post_id, params=params)
         if self.handle_response(response).status_code != 200:
             self.__log.warning(f"Status: {response.status_code}")
             return self.comments(post_id=post_id, cursor=cursor, limit=limit, timestamp=timestamp)
@@ -199,11 +203,11 @@ class AuthSession(Parler):
     """
 
     @check_login
-    def created_items(self, username="", limit=10, cursor="", media_only: int = 0) -> dict:        
+    def created_items(self, username="", limit=10, cursor="", media_only: int = 0) -> dict:
         params = (
-                    ("page", cursor),
-                    ("limit", limit),
-                    ("media_only", media_only)
+            ("page", cursor),
+            ("limit", limit),
+            ("media_only", media_only)
         )
         response = self.get("v0/user/%s/feed/" % username, params=params)
         if self.handle_response(response).status_code != 200:

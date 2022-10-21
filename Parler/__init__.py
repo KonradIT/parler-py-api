@@ -46,7 +46,8 @@ class Parler:
         self.session.headers["User-Agent"] = ua.random
 
         self.__log = logging.getLogger("parler-py-api")
-        self.__log.setLevel(level=logging.DEBUG if self.__debug else logging.ERROR)
+        self.__log.setLevel(
+            level=logging.DEBUG if self.__debug else logging.ERROR)
         self.__log.debug(f"User-Agent: {self.session.headers['User-Agent']}")
         # Default values
         self.__reconnects = 0
@@ -78,7 +79,8 @@ class Parler:
     def handle_response(self, response):
         if self.__reconnects >= self.__max_reconnects:
             raise Exception(
-                "Internal abort; {} reconnect attemps".format(self.__max_reconnects)
+                "Internal abort; {} reconnect attemps".format(
+                    self.__max_reconnects)
             )
         elif response.status_code >= 400 and response.status_code <= 428:
             raise Exception(
@@ -140,9 +142,9 @@ class Parler:
 
     def user_feed(self, username: str = "", cursor: int = 1, limit: int = 10, media_only: int = 0) -> dict:
         params = (
-                    ("page", cursor),
-                    ("limit", limit),
-                    ("media_only", media_only)
+            ("page", cursor),
+            ("limit", limit),
+            ("media_only", media_only)
         )
         response = self.get("v0/public/user/%s/feed" % username, params=params)
         if self.handle_response(response).status_code != 200:
@@ -156,8 +158,9 @@ class Parler:
 
     def trending(self, tab: str = "today") -> dict:
         if tab != "today":
-            raise self.OldParameterException("%s no longer supported in newer Parler API." % ("tab=top"))
-      
+            raise self.OldParameterException(
+                "%s no longer supported in newer Parler API." % ("tab=top"))
+
         response = self.get("v0/public/trending/parleys/today")
         if self.handle_response(response).status_code != 200:
             self.__log.warning(f"Status: {response.status_code}")
