@@ -1,12 +1,14 @@
 # Parler API interface for Python
 
-![](https://i.imgur.com/eWJwdk2.jpg)
+![](https://i.imgur.com/uPUw5p1.jpg)
 
 This **UNOFFICIAL** library designed to programatically fetch data from parler.com
 
 # IMPORTANT ANNOUNCEMENT:
 
-This library supports the new (as of 2022-02-06) Parler `open-api` / logged-in endpoints. Both logged in and guest modes are supported.
+~~This library supports the new (as of 2022-02-06) Parler `open-api` / logged-in endpoints. Both logged in and guest modes are supported.~~
+
+**Show is back on!** Now this library supports the *even newer* (as of 2022-10-21) Parler `/v0/` and `/v0/public` endpoints. Same caveats, both logged in and guest modes are supported \#champagnepapi
 
 # To do list:
 

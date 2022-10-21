@@ -25,6 +25,8 @@ class Parler:
     class NotSupportedException(Exception):
         pass
 
+    class OldParameterException(Exception):
+        pass
     """
     :param debug: logging.info debugging messages
     """
@@ -37,7 +39,7 @@ class Parler:
             print(p)
 
         self.__debug = debug
-        self.__base_url = "https://parler.com/"
+        self.__base_url = "https://api.parler.com/"
         self.session = requests.Session()
 
         self.session.get(self.__base_url)
@@ -116,11 +118,8 @@ class Parler:
     :param username: Username to fetch
     """
 
-    def profile(self, username=None) -> dict:
-        files = {
-            "user": (None, username),
-        }
-        response = self.post("api/profile_view.php", files=files)
+    def profile(self, username: str = "") -> dict:
+        response = self.get("v0/public/user/%s" % username)
         if self.handle_response(response).status_code != 200:
             self.__log.warning(f"Status: {response.status_code}")
             return self.profile(username=username)
@@ -132,22 +131,20 @@ class Parler:
     """
 
     def discover_feed(self, limit: int = None, cursor: str = None) -> dict:
-        if limit or cursor:
-            self.__log.warning("Deprecated parameters: limit, warn")
-        response = self.get("open-api/DiscoverEndpoint.php")
-        if self.handle_response(response).status_code != 200:
-            self.__log.warning(f"Status: {response.status_code}")
-            return self.discover_feed(limit, cursor)
-        return response.json()
+        raise self.NotSupportedException()
 
     """
     :param cursor: cursor
     :param username: username
     """
 
-    def user_feed(self, username: str = "", cursor: int = 1) -> dict:
-        files = {"user": (None, username), "page": (None, str(cursor))}
-        response = self.post("open-api/ProfileFeedEndpoint.php", files=files)
+    def user_feed(self, username: str = "", cursor: int = 1, limit: int = 10, media_only: int = 0) -> dict:
+        params = (
+                    ("page", cursor),
+                    ("limit", limit),
+                    ("media_only", media_only)
+        )
+        response = self.get("v0/public/user/%s/feed" % username, params=params)
         if self.handle_response(response).status_code != 200:
             self.__log.warning(f"Status: {response.status_code}")
             return self.user_feed(cursor=cursor, username=username)
@@ -157,17 +154,18 @@ class Parler:
     param tab: "today" or "top"
     """
 
-    def trending(self, tab: str = "top") -> dict:
-        files = {"tab": (None, tab)}
-        response = self.post("open-api/trending.php", files=files)
+    def trending(self, tab: str = "today") -> dict:
+        if tab != "today":
+            raise self.OldParameterException("%s no longer supported in newer Parler API." % ("tab=top"))
+      
+        response = self.get("v0/public/trending/parleys/today")
         if self.handle_response(response).status_code != 200:
             self.__log.warning(f"Status: {response.status_code}")
-            return self.trending(tab=tab)
+            return self.trending()
         return response.json()
 
     def post_info(self, uuid: str = "") -> dict:
-        files = {"uuid": (None, uuid)}
-        response = self.post("open-api/ParleyDetailEndpoint.php", files=files)
+        response = self.get("/v0/public/parleys/%s" % uuid)
         if self.handle_response(response).status_code != 200:
             self.__log.warning(f"Status: {response.status_code}")
             return self.post_info(uuid=uuid)

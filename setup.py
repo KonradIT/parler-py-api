@@ -13,7 +13,7 @@ with open('requirements.txt') as f:
 setuptools.setup(
     name="parler-api",
     version=version,
-    description="Parler API library - v2",
+    description="Parler API library - v2.7",
     long_description=description,
     long_description_content_type="text/markdown",
     url="https://github.com/konradit/parler-py-api",
