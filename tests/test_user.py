@@ -2,12 +2,13 @@ import Parler
 from Parler import with_auth as authed
 import os
 import random
+from Parler import utils
 
 p = Parler.Parler(debug=True)
 au = authed.AuthSession(debug=False)
 
-posts_per_user = 20
-search_hits_per_page = 50
+posts_per_user = 10
+search_hits_per_page = 10
 
 badge_types = [
     "gold",
@@ -24,25 +25,40 @@ def test_get_profile():
     r = p.profile("TheWesternJournal").get("data")
     assert r is not None
     assert "username" in r
-    assert "dateCreated" in r
     assert (
         "uuid" in r and r.get("uuid") == "40f28d1a-ee94-4d6f-ad9a-ed4cd3a39228"
     )  # https://web.archive.org/web/20220213155807/https://parler.com/open-api/parley.php
     assert "bio" in r
     assert "website" in r
     assert "location" in r
-    assert "joinedAt" in r
+    assert "joined_date" in r
+    assert "birthday" in r
+    assert "gender" in r
+    assert "real_name" in r
+    assert "joined_date" in r
+    assert "following_count" in r
+    assert "follower_count" in r
+    assert "is_private" in r
+    assert "is_public" in r
 
 
 def test_get_profile_feed():
     r = p.user_feed(username="TheWesternJournal")
+    assert utils.is_ok(r)
+
     assert len(r.get("data")) == posts_per_user  # posts per user
-    assert "id" in r.get("data")[0].get("primary")
-    assert "uuid" in r.get("data")[0].get("primary")
-    assert "body" in r.get("data")[0].get("primary")
-    assert "full_body" in r.get("data")[0].get("primary")
-    assert "image" in r.get("data")[0].get("primary")
-    assert "domain_name" in r.get("data")[0].get("primary")
+    assert "postuuid" in r.get("data")[0]
+    assert "body" in r.get("data")[0]
+    assert "title" in r.get("data")[0]
+    assert "total_comments" in r.get("data")[0]
+    assert "upvotes" in r.get("data")[0]
+    assert "echos" in r.get("data")[0]
+    assert "views" in r.get("data")[0]
+    assert "is_echo" in r.get("data")[0]
+    assert "is_comment" in r.get("data")[0]
+    assert "link" in r.get("data")[0]
+    assert "trolling" in r.get("data")[0]
+    assert "ad" in r.get("data")[0]
 
 
 def test_get_profile_feed_pagination():
@@ -59,9 +75,9 @@ def test_get_profile_feed_pagination():
 
     # deep dive: get IDs of each post in user feed, sort alphabetically, compare against n+1
 
-    fp1 = [x.get("primary").get("uuid") for x in r1.get("data")]
-    fp2 = [x.get("primary").get("uuid") for x in r2.get("data")]
-    fp3 = [x.get("primary").get("uuid") for x in r3.get("data")]
+    fp1 = [x.get("postuuid") for x in r1.get("data")]
+    fp2 = [x.get("postuuid") for x in r2.get("data")]
+    fp3 = [x.get("postuuid") for x in r3.get("data")]
 
     fp1.sort()
     fp2.sort()
@@ -83,17 +99,16 @@ def test_login():
 
 def test_search_users():
     r = au.users("qanon")
-    assert len(r) == search_hits_per_page
+    assert utils.is_ok(r)
+
+    assert len(r.get("data")) == search_hits_per_page
 
     # pick one at random
 
-    user = r[random.randint(0, search_hits_per_page - 1)]
+    user = r.get("data")[random.randint(0, search_hits_per_page - 1)]
 
     assert "name" in user
     assert "username" in user
-    assert "followed" in user
-    assert "profile_picture" in user
-
     assert "badges" in user
 
     for x in badge_types:

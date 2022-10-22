@@ -6,7 +6,12 @@ def add_missing_values(row):
         row["Domain"] = "parler.com"
     return row
 
-
+def is_ok(data: dict) -> bool:
+    return (
+        "status" in data and \
+        data.get("status") == "success" and \
+        "data" in data
+    )
 def check_login(func):
     def wrapper(*args):
         if not args[0].is_logged_in:

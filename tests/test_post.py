@@ -1,6 +1,7 @@
 import Parler
 from Parler import with_auth as authed
 import os
+from Parler import utils
 
 p = Parler.Parler(debug=True)
 au = authed.AuthSession(debug=False)
@@ -8,16 +9,10 @@ au = authed.AuthSession(debug=False)
 
 def test_get_post():
     r = p.post_info("ef4d02fe-7a5a-4ab4-8e82-7c0ee5e32960")
-    assert r.get("status") == "ok"
-
-    assert "uuid" in r.get("data")[0].get("primary")
+    assert utils.is_ok(r)
+    assert "postuuid" in r.get("data")
     assert (
-        r.get("data")[0].get("primary").get("uuid")
+        r.get("data").get("postuuid")
         == "ef4d02fe-7a5a-4ab4-8e82-7c0ee5e32960"
     )
-    assert "id" in r.get("data")[0].get("primary")
-    assert "uuid" in r.get("data")[0].get("primary")
-    assert "body" in r.get("data")[0].get("primary")
-    assert "full_body" in r.get("data")[0].get("primary")
-    assert "image" in r.get("data")[0].get("primary")
-    assert "domain_name" in r.get("data")[0].get("primary")
+    assert "body" in r.get("data")
