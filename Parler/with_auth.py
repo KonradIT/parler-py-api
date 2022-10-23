@@ -30,7 +30,7 @@ class AuthSession(Parler):
         response = self.post("v0/login", json=data)
 
         if self.handle_response(response).status_code != 200:
-            self.__log.warning(f"Status: {response.status_code}")
+            self._log.warning(f"Status: {response.status_code}")
             return self.login(identifier=identifier, password=password)
 
         received = response.json()
@@ -76,7 +76,7 @@ class AuthSession(Parler):
         )
         response = self.get("v0/parleys/feed/dashboard", params=params)
         if self.handle_response(response).status_code != 200:
-            self.__log.warning(f"Status: {response.status_code}")
+            self._log.warning(f"Status: {response.status_code}")
             return self.feed(
                 cursor=cursor,
                 limit=limit
@@ -95,7 +95,7 @@ class AuthSession(Parler):
         )
         response = self.get("v0/search/user/%s" % searchtag, params=params)
         if self.handle_response(response).status_code != 200:
-            self.__log.warning(f"Status: {response.status_code}")
+            self._log.warning(f"Status: {response.status_code}")
             return self.users(searchtag=searchtag)
         return response.json()
 
@@ -111,7 +111,7 @@ class AuthSession(Parler):
         )
         response = self.get("v0/search/hashtag/%s" % searchtag, params=params)
         if self.handle_response(response).status_code != 200:
-            self.__log.warning(f"Status: {response.status_code}")
+            self._log.warning(f"Status: {response.status_code}")
             return self.hashtags(searchtag=searchtag)
         return response.json()
 
@@ -140,7 +140,7 @@ class AuthSession(Parler):
     def trending_users(self):
         response = self.get("v0/trending/users/today")
         if self.handle_response(response).status_code != 200:
-            self.__log.warning(f"Status: {response.status_code}")
+            self._log.warning(f"Status: {response.status_code}")
             return self.trending_users()
         return response.json()
 
@@ -152,8 +152,20 @@ class AuthSession(Parler):
         )
         response = self.get("v0/user/%s/following" % username, params=params)
         if self.handle_response(response).status_code != 200:
-            self.__log.warning(f"Status: {response.status_code}")
+            self._log.warning(f"Status: {response.status_code}")
             return self.following(username=username, cursor=cursor, limit=limit)
+        return response.json()
+    
+    @check_login
+    def discover_feed(self, cursor: int = 1, limit: int = 20) -> dict:
+        params = (
+            ("page", cursor),
+            ("limit", limit),
+        )
+        response = self.get("v0/parleys/feed/discover", params=params)
+        if self.handle_response(response).status_code != 200:
+            self._log.warning(f"Status: {response.status_code}")
+            return self.discover_feed(limit=limit, cursor=cursor)
         return response.json()
 
     """
@@ -171,7 +183,7 @@ class AuthSession(Parler):
         response = self.get("v0/parleys/%s/comments_before/" %
                             post_id, params=params)
         if self.handle_response(response).status_code != 200:
-            self.__log.warning(f"Status: {response.status_code}")
+            self._log.warning(f"Status: {response.status_code}")
             return self.comments(post_id=post_id, cursor=cursor, limit=limit, timestamp=timestamp)
         return response.json()
 
@@ -179,7 +191,7 @@ class AuthSession(Parler):
     def post_info(self, post_id: str = "") -> dict:
         response = self.get("v0/parleys/%s" % post_id)
         if self.handle_response(response).status_code != 200:
-            self.__log.warning(f"Status: {response.status_code}")
+            self._log.warning(f"Status: {response.status_code}")
             return self.post_info(post_id=post_id)
         return response.json()
 
@@ -203,7 +215,7 @@ class AuthSession(Parler):
     """
 
     @check_login
-    def created_items(self, username="", limit=10, cursor="", media_only: int = 0) -> dict:
+    def created_items(self, username="", limit=20, cursor=1, media_only: int = 0) -> dict:
         params = (
             ("page", cursor),
             ("limit", limit),
@@ -211,7 +223,7 @@ class AuthSession(Parler):
         )
         response = self.get("v0/user/%s/feed/" % username, params=params)
         if self.handle_response(response).status_code != 200:
-            self.__log.warning(f"Status: {response.status_code}")
+            self._log.warning(f"Status: {response.status_code}")
             return self.following(username=username, cursor=cursor, limit=limit)
         return response.json()
 

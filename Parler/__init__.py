@@ -45,10 +45,10 @@ class Parler:
         self.session.get(self.__base_url)
         self.session.headers["User-Agent"] = ua.random
 
-        self.__log = logging.getLogger("parler-py-api")
-        self.__log.setLevel(
+        self._log = logging.getLogger("parler-py-api")
+        self._log.setLevel(
             level=logging.DEBUG if self.__debug else logging.ERROR)
-        self.__log.debug(f"User-Agent: {self.session.headers['User-Agent']}")
+        self._log.debug(f"User-Agent: {self.session.headers['User-Agent']}")
         # Default values
         self.__reconnects = 0
         self.__retry_delay = 2
@@ -69,7 +69,7 @@ class Parler:
             ] == "true":
                 fh = logging.FileHandler(config["log_to_file"]["log_file"])
                 fh.setLevel(logging.DEBUG)
-                self.__log.addHandler(fh)
+                self._log.addHandler(fh)
 
     """
     @helper response handler
@@ -92,14 +92,14 @@ class Parler:
             )
 
         elif response.status_code == 502:
-            self.__log.warning(
+            self._log.warning(
                 f"Bad Gateway Error, retry in {self.__retry_delay} seconds"
             )
             self.__reconnects += 1
             sleep(self.__retry_delay)
 
         elif response.status_code == 429:
-            self.__log.warning(
+            self._log.warning(
                 f"Too many requests Error, retry in {self.__retry_delay} seconds"
             )
             self.__reconnects += 1
@@ -123,17 +123,9 @@ class Parler:
     def profile(self, username: str = "") -> dict:
         response = self.get("v0/public/user/%s" % username)
         if self.handle_response(response).status_code != 200:
-            self.__log.warning(f"Status: {response.status_code}")
+            self._log.warning(f"Status: {response.status_code}")
             return self.profile(username=username)
         return response.json()
-
-    """
-    :param limit: limit
-    :param cursor: string to id the next items
-    """
-
-    def discover_feed(self, limit: int = None, cursor: str = None) -> dict:
-        raise self.NotSupportedException()
 
     """
     :param cursor: cursor
@@ -148,7 +140,7 @@ class Parler:
         )
         response = self.get("v0/public/user/%s/feed" % username, params=params)
         if self.handle_response(response).status_code != 200:
-            self.__log.warning(f"Status: {response.status_code}")
+            self._log.warning(f"Status: {response.status_code}")
             return self.user_feed(cursor=cursor, username=username)
         return response.json()
 
@@ -163,13 +155,13 @@ class Parler:
 
         response = self.get("v0/public/trending/parleys/today")
         if self.handle_response(response).status_code != 200:
-            self.__log.warning(f"Status: {response.status_code}")
+            self._log.warning(f"Status: {response.status_code}")
             return self.trending()
         return response.json()
 
     def post_info(self, uuid: str = "") -> dict:
         response = self.get("/v0/public/parleys/%s" % uuid)
         if self.handle_response(response).status_code != 200:
-            self.__log.warning(f"Status: {response.status_code}")
+            self._log.warning(f"Status: {response.status_code}")
             return self.post_info(uuid=uuid)
         return response.json()

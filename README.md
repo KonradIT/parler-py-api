@@ -15,7 +15,7 @@ This **UNOFFICIAL** library designed to programatically fetch data from parler.c
 - [X] Implement unfinished authed functions
 - [ ] Rework experiments
 - [ ] Have a github action (several!) to archive posts, run analysises, etc..
-- [ ] Testing, testing
+- [X] Testing, testing
 - [X] Publish to pypi
 
 ## Authentication:
@@ -42,15 +42,13 @@ Here is a chart of how the functions are "loginwalled" or not.
 | Function           | Description                                                                            | API Type needed |
 |--------------------|----------------------------------------------------------------------------------------|-----------------|
 | `.profile()`       | Get information from a specified username                                              | Guest           |
-| `.discover_feed()` | Get discovery feed from initial page (kinda like suggested posts for first time users) | Guest           |
 | `.user_feed()`     | Get Parleys and echoes from a specified username                                       | Guest           |
-| `.trending()`      | Get trending posts (today / top)                                                       | Guest           |
+| `.trending()`      | Get trending people                                                                    | Guest           |
 | `.feed()`          | Get feed                                                                               | Authenticated   |
 | `.users()`         | Search for users                                                                       | Authenticated   |
 | `.hashtags()`      | Search for hashtags                                                                    | Authenticated   |
 | `.following()`     | Get following profiles from specified username                                         | Authenticated   |
 | `.comments()`      | Get comments from a specified post ID                                                  | Authenticated   |
-| `.follow_user()`   | Follow a specified username                                                            | Authenticated   |
 
 ## Installation
 

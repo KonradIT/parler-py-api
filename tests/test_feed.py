@@ -9,6 +9,7 @@ au = authed.AuthSession(debug=False)
 posts_per_feed_page = 10
 trending_length = 12
 trending_user_length = 20
+discover_feed_length = 20
 
 
 def test_get_feed():
@@ -40,6 +41,15 @@ def test_get_feed():
     assert fp1 != fp2
     assert fp2 != fp3
 
+def test_discover_feed():    
+    assert os.getenv("PARLER_USERNAME") is not None
+    assert os.getenv("PARLER_PASSWORD") is not None
+    au.login(
+        identifier=os.getenv("PARLER_USERNAME"), password=os.getenv("PARLER_PASSWORD")
+    )
+    assert au.is_logged_in
+    assert utils.is_ok(au.discover_feed())
+    assert len(au.discover_feed().get("data")) == discover_feed_length
 
 def test_trending():
     assert len(p.trending("today")["data"]) == trending_length
