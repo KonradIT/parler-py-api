@@ -87,7 +87,7 @@ class Parler:
                 {
                     "status": response.status_code,
                     "error": response.reason,
-                    "message": self.Errors.NoAuth,
+                    "message": response.text,
                 }
             )
 

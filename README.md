@@ -15,6 +15,7 @@ This **UNOFFICIAL** library designed to programatically fetch data from parler.c
 - [X] Implement unfinished authed functions
 - [ ] Rework experiments
 - [ ] Have a github action (several!) to archive posts, run analysises, etc..
+- [ ] Implement controls for header `x-ratelimit-limit` and `x-ratelimit-limit-remaining`
 - [X] Testing, testing
 - [X] Publish to pypi
 
