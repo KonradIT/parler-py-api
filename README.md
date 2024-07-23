@@ -4,52 +4,6 @@
 
 This **UNOFFICIAL** library designed to programatically fetch data from parler.com
 
-# IMPORTANT ANNOUNCEMENT:
-
-~~This library supports the new (as of 2022-02-06) Parler `open-api` / logged-in endpoints. Both logged in and guest modes are supported.~~
-
-**Show is back on!** Now this library supports the *even newer* (as of 2022-10-21) Parler `/v0/` and `/v0/public` endpoints. Same caveats, both logged in and guest modes are supported
-
-# To do list:
-
-- [X] Implement unfinished authed functions
-- [ ] Rework experiments
-- [ ] Have a github action (several!) to archive posts, run analysises, etc..
-- [ ] Implement controls for header `x-ratelimit-limit` and `x-ratelimit-limit-remaining`
-- [X] Testing, testing
-- [X] Publish to pypi
-
-## Authentication:
-
-There are two modes of using the API. **Authenticated** and **Guest**.
-
-Authentication is done by initializing the `Parler` class, importing `Parler.with_auth` and initializing an `AuthSession` with your credentials.
-
-```python
-from Parler import with_auth as authed
-
-au = authed.AuthSession(debug=False)
-au.is_logged_in # ==> False
-au.login(
-	identifier=os.getenv("email"),
-	password=os.getenv("password")
-)
-
-au.is_logged_in # ==> True
-```
-
-Here is a chart of how the functions are "loginwalled" or not.
-
-| Function           | Description                                                                            | API Type needed |
-|--------------------|----------------------------------------------------------------------------------------|-----------------|
-| `.profile()`       | Get information from a specified username                                              | Guest           |
-| `.user_feed()`     | Get Parleys and echoes from a specified username                                       | Guest           |
-| `.trending()`      | Get trending people                                                                    | Guest           |
-| `.feed()`          | Get feed                                                                               | Authenticated   |
-| `.users()`         | Search for users                                                                       | Authenticated   |
-| `.hashtags()`      | Search for hashtags                                                                    | Authenticated   |
-| `.following()`     | Get following profiles from specified username                                         | Authenticated   |
-| `.comments()`      | Get comments from a specified post ID                                                  | Authenticated   |
 
 ## Installation
 
@@ -74,11 +28,23 @@ If using `pip`:
 pip install -r requirements.txt
 ```
 
-## Experiments:
+## Login + save credentials:
 
-Collected the suggested hashtags for a 9 hour period, [data here](./sampledata/hashtags.csv)
+```bash
+$ python3 ./scripts/login_helper.py
+Parler v3 API Login Helper tool
+Please enter your email used to register with Parler
+Email: your.email@here.com
+DEBUG:parler-py-api:User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36
+Magic link: https://api.parler.com/magicLogin/jbZgjMe3V....
+All done.
+$ 
+```
+## CLI usage:
 
-Other experiments available as well.
+```bash
+$ python3 ./scripts/simplecli.py --debug=True --config_file=parlerconfig.ini search --term=ukraine
+```
 
 ## Contributing:
 

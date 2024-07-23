@@ -27,6 +27,10 @@ class Parler:
 
     class OldParameterException(Exception):
         pass
+
+    class NoLocationException(Exception):
+        pass
+
     """
     :param debug: logging.info debugging messages
     """
@@ -38,6 +42,7 @@ class Parler:
         if p is not None:
             print(p)
 
+        self.__token = ""
         self.__debug = debug
         self.__base_url = "https://api.parler.com/"
         self.session = requests.Session()
@@ -46,8 +51,7 @@ class Parler:
         self.session.headers["User-Agent"] = ua.random
 
         self._log = logging.getLogger("parler-py-api")
-        self._log.setLevel(
-            level=logging.DEBUG if self.__debug else logging.ERROR)
+        self._log.setLevel(level=logging.DEBUG if self.__debug else logging.ERROR)
         self._log.debug(f"User-Agent: {self.session.headers['User-Agent']}")
         # Default values
         self.__reconnects = 0
@@ -64,12 +68,15 @@ class Parler:
             ):
                 self.__retry_delay = config["connection"]["retry_delay"]
                 self.__max_reconnects = config["connection"]["max_reconnects"]
-            if ["log_to_file"] in "config" and config["log_to_file"][
-                "enabled"
-            ] == "true":
+            if "log_to_file" in config and config["log_to_file"]["enabled"] == "true":
                 fh = logging.FileHandler(config["log_to_file"]["log_file"])
                 fh.setLevel(logging.DEBUG)
                 self._log.addHandler(fh)
+
+            # Set auth from file
+            self.session.headers["Authorization"] = (
+                "Bearer " + config["credentials"]["token"]
+            )
 
     """
     @helper response handler
@@ -79,8 +86,7 @@ class Parler:
     def handle_response(self, response):
         if self.__reconnects >= self.__max_reconnects:
             raise Exception(
-                "Internal abort; {} reconnect attemps".format(
-                    self.__max_reconnects)
+                "Internal abort; {} reconnect attemps".format(self.__max_reconnects)
             )
         elif response.status_code >= 400 and response.status_code <= 428:
             raise Exception(
@@ -121,47 +127,58 @@ class Parler:
     """
 
     def profile(self, username: str = "") -> dict:
-        response = self.get("v0/public/user/%s" % username)
-        if self.handle_response(response).status_code != 200:
-            self._log.warning(f"Status: {response.status_code}")
-            return self.profile(username=username)
-        return response.json()
+        raise self.NotSupportedException()
 
     """
     :param cursor: cursor
     :param username: username
     """
 
-    def user_feed(self, username: str = "", cursor: int = 1, limit: int = 10, media_only: int = 0) -> dict:
-        params = (
-            ("page", cursor),
-            ("limit", limit),
-            ("media_only", media_only)
-        )
-        response = self.get("v0/public/user/%s/feed" % username, params=params)
-        if self.handle_response(response).status_code != 200:
-            self._log.warning(f"Status: {response.status_code}")
-            return self.user_feed(cursor=cursor, username=username)
-        return response.json()
+    def user_feed(
+        self, username: str = "", cursor: int = 1, limit: int = 10, media_only: int = 0
+    ) -> dict:
+        raise self.NotSupportedException()
 
     """
     param tab: "today" or "top"
     """
 
     def trending(self, tab: str = "today") -> dict:
-        if tab != "today":
-            raise self.OldParameterException(
-                "%s no longer supported in newer Parler API." % ("tab=top"))
-
-        response = self.get("v0/public/trending/parleys/today")
-        if self.handle_response(response).status_code != 200:
-            self._log.warning(f"Status: {response.status_code}")
-            return self.trending()
-        return response.json()
+        raise self.NotSupportedException()
 
     def post_info(self, uuid: str = "") -> dict:
-        response = self.get("/v0/public/parleys/%s" % uuid)
-        if self.handle_response(response).status_code != 200:
-            self._log.warning(f"Status: {response.status_code}")
-            return self.post_info(uuid=uuid)
+        raise self.NotSupportedException()
+
+    def send_magic_link(self, email: str) -> dict:
+        response = self.post("sendMagicLink", json={"email": email})
         return response.json()
+
+    def seed_login(self, magic_link: str):
+        response = self.session.get(magic_link, allow_redirects=False)
+        if response.status_code == 302:
+            return str(response.headers["Location"]).replace(
+                "https://app.parler.com?otp=", ""
+            )
+        raise self.NoLocationException()
+
+    def magic_login(self, otp: str):
+        response = self.post("magicLogin", json={"otp": otp})
+        as_json = response.json()
+        self.__token = as_json.get("token")
+        self.session.headers["Authorization"] = "Bearer " + self.__token
+        return self.__token
+
+    def following(self):
+        return self.get("v3/posts/following").json()
+
+    def hydrate_posts(self, *posts) -> dict:
+        posts_list = list(posts)
+        return self.post(
+            "v3/posts/map",
+            json={
+                "ulids": posts_list,
+            },
+        ).json()
+
+    def search(self, term: str) -> dict:
+        return self.post("v3/search/posts/hashtag", json={"hashtag": term}).json()
